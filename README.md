@@ -12,10 +12,9 @@ The approved initial-release design is recorded in
 
 ## Status
 
-The product design is approved. Implementation begins only after the written
-specification has been reviewed.
+The product design and written specification are approved. The implementation
+plan is ready for owner review before execution begins.
 
 ## License
 
 MIT.
-
