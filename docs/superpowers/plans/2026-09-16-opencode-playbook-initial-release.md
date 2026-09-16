@@ -52,7 +52,7 @@ OpenCode CLI 1.18.31 or later-compatible behavior, GitHub CLI, GitHub Pages.
 - Modify: `PROGRESS.md`
 - Modify: `CHANGELOG.md`
 
-- [ ] **Step 1: Add the parity assertions before copying the rulebook**
+- [x] **Step 1: Add the parity assertions before copying the rulebook**
 
 Run the following one-off failing check from the OpenCode repository:
 
@@ -64,7 +64,7 @@ test "$(grep -Ec '^[0-9]+\. \*\*' AGENTS.md)" -eq 42
 
 Expected: failure because `AGENTS.md` does not exist yet.
 
-- [ ] **Step 2: Add the exact governing agreement**
+- [x] **Step 2: Add the exact governing agreement**
 
 Create `AGENTS.md` with the complete bytes from
 `../codex-playbook/AGENTS.md`. Do not replace “Codex” inside the agreement: the
@@ -79,7 +79,7 @@ wc -c AGENTS.md ../codex-playbook/AGENTS.md
 
 Expected: `cmp` exits zero, the rule count is 42, and both byte counts match.
 
-- [ ] **Step 3: Record the separate-repository decision**
+- [x] **Step 3: Record the separate-repository decision**
 
 Write ADR 0001 with these exact decisions:
 
@@ -115,20 +115,20 @@ Accepted — 2026-09-16.
 
 Index the ADR in `docs/adr/README.md`.
 
-- [ ] **Step 4: Write the source-adaptation report**
+- [x] **Step 4: Write the source-adaptation report**
 
 Document the exact rulebook parity, OpenCode global and project instruction
 locations, `.opencode/skills` discovery, `OPENCODE_CONFIG_DIR`, the deliberate
 decision not to write `opencode.json`, and rejected Claude/Codex-only mechanics.
 Link only current official OpenCode documentation for client behavior.
 
-- [ ] **Step 5: Update architecture and status documents**
+- [x] **Step 5: Update architecture and status documents**
 
 Describe the always-loaded rulebook, progressive-disclosure skills, managed
 write set, backup root, and trust boundary. Record the completed slice in
 `PROGRESS.md` and `CHANGELOG.md` without marking the release complete.
 
-- [ ] **Step 6: Verify and commit the slice**
+- [x] **Step 6: Verify and commit the slice**
 
 ```sh
 cmp AGENTS.md ../codex-playbook/AGENTS.md
@@ -249,9 +249,11 @@ these exact semantic substitutions:
 | `codex-playbook-prerestore-*` | `opencode-playbook-prerestore-*` |
 | `Codex Playbook` | `OpenCode Playbook` |
 
-Default-path cases must assert installation beneath
-`$HOME/.config/opencode`. Custom-root cases must use an absolute isolated
-`OPENCODE_CONFIG_DIR` and assert that `$HOME/.config/opencode` remains untouched.
+Default-path cases must resolve
+`${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}`. Cover both
+the `$HOME/.config/opencode` fallback and `XDG_CONFIG_HOME` relocation. Custom-
+root cases must use an absolute isolated `OPENCODE_CONFIG_DIR` and assert that
+the default XDG-derived OpenCode directory remains untouched.
 
 - [ ] **Step 2: Preserve the complete failure matrix**
 
@@ -309,7 +311,8 @@ Expected: both commands exit zero.
 Port the verified Codex installer transaction with these OpenCode definitions:
 
 ```sh
-opencode_config_dir=${OPENCODE_CONFIG_DIR:-"$HOME/.config/opencode"}
+xdg_config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+opencode_config_dir=${OPENCODE_CONFIG_DIR:-"$xdg_config_home/opencode"}
 skills_root="$opencode_config_dir/skills"
 agents_source="$repo_root/AGENTS.md"
 agents_target="$opencode_config_dir/AGENTS.md"
@@ -317,10 +320,10 @@ skill_names='opencode-playbook-dependency-review opencode-playbook-quarantine op
 backup_root="$opencode_config_dir/backups"
 ```
 
-Validate that `HOME` is set and absolute, and that an explicit
-`OPENCODE_CONFIG_DIR` is absolute. Validate regular-file and real-directory
-types for sources and managed targets. Refuse a different global agreement
-without `--replace-agents`.
+Validate that `HOME` is set and absolute, and that explicit
+`XDG_CONFIG_HOME` and `OPENCODE_CONFIG_DIR` values are absolute. Validate
+regular-file and real-directory types for sources and managed targets. Refuse
+a different global agreement without `--replace-agents`.
 
 Use `umask 077`, create a unique
 `opencode-playbook-preinstall-<UTC>-XXXXXX` checkpoint, record `present` or
@@ -407,8 +410,8 @@ Expected: one commit containing tests and their passing implementation.
 Document the exact source-to-destination table:
 
 ```text
-AGENTS.md -> ${OPENCODE_CONFIG_DIR:-$HOME/.config/opencode}/AGENTS.md
-.opencode/skills/opencode-playbook-* -> ${OPENCODE_CONFIG_DIR:-$HOME/.config/opencode}/skills/opencode-playbook-*
+AGENTS.md -> ${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}/AGENTS.md
+.opencode/skills/opencode-playbook-* -> ${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}/skills/opencode-playbook-*
 ```
 
 Explain preflight inspection, default refusal, explicit replacement,
@@ -657,6 +660,7 @@ destinations byte-for-byte, then run a new OpenCode session from the repository:
 
 ```sh
 OPENCODE_CONFIG_DIR="$isolated_config" ./scripts/install.sh
+OPENCODE_CONFIG_DIR="$isolated_config" opencode debug skill --pure
 OPENCODE_CONFIG_DIR="$isolated_config" opencode run --pure --format json \
   "State the active motto and list every OpenCode Playbook skill available to you. Do not modify files."
 ```

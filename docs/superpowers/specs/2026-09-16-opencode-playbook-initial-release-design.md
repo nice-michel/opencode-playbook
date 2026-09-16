@@ -55,22 +55,25 @@ Repository skills live under:
   opencode-playbook-release/SKILL.md
 ```
 
-The installer places user-scoped copies under:
+The installer will place user-scoped copies under:
 
 ```text
-~/.config/opencode/skills/
+<resolved-config-directory>/skills/
 ```
 
-The global agreement installs to:
+The global agreement will install to:
 
 ```text
-~/.config/opencode/AGENTS.md
+<resolved-config-directory>/AGENTS.md
 ```
 
-An explicit `OPENCODE_CONFIG_DIR` will relocate both managed destinations and
-the checkpoint root. The installer will treat the resolved configuration
-directory as one trust boundary and refuse unsafe, symlinked, or nonstandard
-managed paths.
+The resolved configuration directory is
+`${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}`. An
+explicit `OPENCODE_CONFIG_DIR` is used by both the installer and OpenCode's
+custom configuration service; without it, the XDG-aware default applies. The
+installer will treat that one resolved directory as its managed trust boundary
+and refuse unsafe, symlinked, or nonstandard managed paths. Runtime verification
+will use the same explicit override as installation.
 
 ## Installation Lifecycle
 
@@ -155,6 +158,8 @@ will cover:
 - First installation and verified restore.
 - Reinstallation and unique immutable checkpoints.
 - `OPENCODE_CONFIG_DIR` relocation.
+- `XDG_CONFIG_HOME` default-root relocation when no explicit OpenCode override
+  is present.
 - Refusal of a different global agreement and explicit replacement.
 - Preservation of unrelated configuration and skills.
 - Incomplete or malformed source checkouts.
@@ -184,4 +189,3 @@ an independent release-candidate review pass.
 
 The finished release must leave no long-running local process and both source
 playbook repositories must remain clean.
-

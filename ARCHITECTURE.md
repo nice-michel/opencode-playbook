@@ -11,10 +11,11 @@ The repository-root `AGENTS.md` is the always-loaded governing authority. Its
 It defines policy, approval gates, quality standards, verification duties, and
 safety boundaries.
 
-Detailed procedures live under `.opencode/skills/`. OpenCode discovers skill
-metadata and loads the full `SKILL.md` only when the procedure is relevant.
-Skills may explain how to perform work, but they cannot add authority or
-approval gates beyond `AGENTS.md`.
+The planned detailed procedures will live under `.opencode/skills/`. Once
+implemented, OpenCode will discover their metadata and load each full
+`SKILL.md` only when the procedure is relevant. Skills may explain how to
+perform work, but they cannot add authority or approval gates beyond
+`AGENTS.md`.
 
 ## Separate repository
 
@@ -27,13 +28,34 @@ decision is recorded in
 
 ## Installed layout and managed write set
 
-The installer contract resolves its managed configuration directory as
-`${OPENCODE_CONFIG_DIR:-$HOME/.config/opencode}`. `OPENCODE_CONFIG_DIR` is an
-installer override; it is not treated as a runtime-discovery guarantee. The
-current OpenCode runtime resolves its config path as
-`${XDG_CONFIG_HOME:-$HOME/.config}/opencode`, so isolated verification will set
-`XDG_CONFIG_HOME` and `OPENCODE_CONFIG_DIR` to matching parent and child paths
-and confirm the result with `opencode debug paths`.
+The installer and restore tool resolve one managed configuration directory as:
+
+```sh
+${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}
+```
+
+An explicit `OPENCODE_CONFIG_DIR` is also an OpenCode custom configuration
+source. The same explicit value must therefore be present during installation
+and runtime verification. Without that override, the installer follows
+OpenCode's XDG-aware default.
+
+OpenCode 1.18.31 treats the artifacts differently:
+
+- The global instruction service resolves `AGENTS.md` beneath the effective
+  custom configuration directory, replacing the default root when
+  `OPENCODE_CONFIG_DIR` is set.
+- Skill discovery keeps the default XDG configuration directory and adds an
+  explicit `OPENCODE_CONFIG_DIR` to its scanned configuration sources.
+
+That additive read behavior does not widen the playbook's managed write or
+backup boundary; both remain confined to the one resolved directory.
+
+`opencode debug paths` reports static XDG paths, not the effective custom
+configuration service, so it cannot prove whether either artifact is
+discoverable. Verification will inspect `opencode debug skill` for skills and
+use a fresh `opencode run` session for the global agreement. The source and
+runtime evidence are recorded in
+[`docs/reports/2026-09-16-source-adaptation.md`](docs/reports/2026-09-16-source-adaptation.md).
 
 The supported installer will manage exactly four destinations beneath its
 resolved directory:

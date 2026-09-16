@@ -18,3 +18,10 @@ All notable changes to OpenCode Playbook will be documented in this file.
   and excluded Claude/Codex-only mechanics.
 - Architecture documentation for authority, progressive disclosure, the
   managed write set, backup root, and trust boundary.
+
+### Changed
+
+- Corrected the documented configuration-root resolution and OpenCode 1.18.31
+  discovery behavior for global `AGENTS.md` and skills.
+- Updated the public status and implementation plan to distinguish completed
+  Task 1 work from the pending v0.1.0 slices.

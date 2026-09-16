@@ -62,28 +62,48 @@ the OpenCode edition less native and less self-explanatory.
 
 ## Configuration directory and managed boundary
 
-The playbook installer contract resolves its managed global root as
-`${OPENCODE_CONFIG_DIR:-$HOME/.config/opencode}`. When
-`OPENCODE_CONFIG_DIR` is explicitly set, the installer will use that absolute
-directory for the playbook's global `AGENTS.md`, namespaced skills, and recovery
-checkpoints. This is a playbook-specific installer override, not a claim that
-the current OpenCode runtime relocates native discovery with the same variable.
+The playbook resolves its one managed configuration root as:
+
+```sh
+${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}
+```
+
+This order gives an explicit OpenCode custom directory first priority, then
+uses the XDG configuration home when present, and otherwise falls back to
+`$HOME/.config/opencode`. The installer, restore tool, backup root, and runtime
+verification must all use the same resolved root.
 
 OpenCode's [configuration documentation](https://opencode.ai/docs/config/#custom-directory)
-describes `OPENCODE_CONFIG_DIR` as a custom directory loaded in addition to
-other configuration sources. A local probe against OpenCode 1.18.31 found that
-`opencode debug paths` still reports `~/.config/opencode` as its runtime config
-path when only `OPENCODE_CONFIG_DIR` is set. The same command reports
-`$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set, consistent with the
-XDG-aware user configuration path documented for OpenCode assets such as
-[themes](https://opencode.ai/docs/themes/#custom-themes).
+documents `OPENCODE_CONFIG_DIR` as a custom configuration directory. The
+versioned OpenCode 1.18.31 source makes its effective behavior precise:
 
-Isolated runtime verification must therefore set `XDG_CONFIG_HOME` and point
-the installer at the matching child directory. For example,
-`XDG_CONFIG_HOME=/tmp/profile` pairs with
-`OPENCODE_CONFIG_DIR=/tmp/profile/opencode`. Release verification will confirm
-the resolved path with `opencode debug paths` before asserting that OpenCode
-detects the installed agreement or skills.
+- [`Global.Service.config`](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/core/src/global.ts#L59-L65)
+  resolves to `OPENCODE_CONFIG_DIR` when the variable is set and otherwise uses
+  the static XDG-derived OpenCode directory.
+- The [global instruction loader](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/session/instruction.ts#L55-L63)
+  reads `AGENTS.md` beneath that effective service path. For this artifact, an
+  explicit custom root replaces the default global instruction root.
+- [`ConfigPaths.directories`](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/config/paths.ts#L23-L40)
+  retains the static XDG directory and adds `OPENCODE_CONFIG_DIR` to the
+  configuration directories.
+- The [skill service](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/skill/index.ts#L205-L208)
+  scans every one of those directories for OpenCode skill paths. For skills,
+  the explicit root is an additional effective discovery source.
+
+This additive skill read path does not expand the playbook's write authority.
+The installer, backups, restore validation, and rollback remain confined to
+the one resolved managed root.
+
+`opencode debug paths` prints the static XDG-backed `Global.Path` values. It
+does not expose `Global.Service.config` or the full skill discovery set, so its
+output alone cannot prove effective `AGENTS.md` or skill discovery.
+
+A local OpenCode 1.18.31 probe created a uniquely named valid skill beneath a
+private temporary `OPENCODE_CONFIG_DIR`. `opencode debug skill --pure` did not
+list the skill without the override and did list its exact temporary path with
+the override. Release verification will use the same explicit root for the
+installer, `opencode debug skill`, and a fresh `opencode run` session before
+asserting that all managed artifacts are active.
 
 The playbook deliberately does not create, merge, or modify `opencode.json`.
 OpenCode configuration files can contain user-controlled providers, models,
@@ -111,4 +131,7 @@ The following source-client mechanics are rejected for OpenCode delivery:
 - [OpenCode rules](https://opencode.ai/docs/rules/)
 - [OpenCode Agent Skills](https://opencode.ai/docs/skills/)
 - [OpenCode configuration](https://opencode.ai/docs/config/)
-- [OpenCode themes and XDG user configuration](https://opencode.ai/docs/themes/#custom-themes)
+- [OpenCode 1.18.31 global service source](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/core/src/global.ts#L59-L65)
+- [OpenCode 1.18.31 instruction source](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/session/instruction.ts#L55-L63)
+- [OpenCode 1.18.31 configuration-path source](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/config/paths.ts#L23-L40)
+- [OpenCode 1.18.31 skill source](https://github.com/anomalyco/opencode/blob/v1.18.31/packages/opencode/src/skill/index.ts#L205-L208)
