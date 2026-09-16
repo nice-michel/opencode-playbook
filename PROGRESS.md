@@ -10,3 +10,13 @@
 - Recorded the initial-release design for owner review.
 - Approved the written specification and prepared the test-first implementation
   plan for owner review.
+- Established the governing `AGENTS.md` with verified byte-for-byte parity to
+  the Codex Playbook: 42 numbered rules and 13,126 matching bytes.
+- Accepted ADR 0001 for a separate OpenCode-native repository and documented
+  the source-to-client adaptation boundary with current official references.
+- Defined the always-loaded authority, progressive-disclosure skill layer,
+  four-target managed write set, backup root, installer trust boundary, and the
+  distinction between the installer override and OpenCode's XDG runtime path.
+- Initial-release implementation remains in progress: native skills,
+  installation and restore tooling, lifecycle tests, public documentation,
+  visual QA, and publication are later planned slices.
