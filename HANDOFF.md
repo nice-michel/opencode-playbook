@@ -1,93 +1,85 @@
 # Handoff
 
-**Paused:** 2026-09-16, during the Task 1 quality-review loop.
+## Planning checkpoint contract
 
-## Repository State
+Version 0.0.1 records the approved corrective design and execution plan. It is
+not evidence that implementation, publication, Pages, or release is currently
+pending or complete. Resume by evaluating the gates below against local and
+returned remote state; take the first unsatisfied authorized step.
 
-- Repository: `/Users/Michel.Abboud/projects/opencode-playbook`
-- Branch: `main`
-- HEAD before this handoff commit: `c340ee551b3c947469d6e2287897187cd8a8b677`
-- Version: `0.0.0`
-- Remote: none configured
-- Tags: none
-- GitHub repository, Pages site, and release: not created
+The superseded prototype handoff is preserved byte-for-byte at
+[`docs/handoffs/2026-09-16-prototype-handoff.md`](docs/handoffs/2026-09-16-prototype-handoff.md).
 
-## Verified Complete
+## Recorded before external publication
 
-- Product design approved and recorded in
-  `docs/superpowers/specs/2026-09-16-opencode-playbook-initial-release-design.md`.
-- Nine-task implementation plan approved and recorded in
-  `docs/superpowers/plans/2026-09-16-opencode-playbook-initial-release.md`.
-- Task 1 implementation committed as `214f736`.
-- Task 1 specification review approved with no findings.
-- `AGENTS.md` is byte-identical to `../codex-playbook/AGENTS.md`, contains 42
-  numbered rules, and is 13,126 bytes.
-- ADR 0001, source-adaptation report, architecture, changelog, and progress
-  records exist.
-- The first quality review found incorrect configuration-discovery wording.
-  Commit `c340ee5` corrected it to use the XDG-aware default
-  `${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}` and to
-  treat `OPENCODE_CONFIG_DIR` as the explicit effective custom root.
-- An isolated `opencode debug skill --pure` probe confirmed that a skill in the
-  explicit custom root is discovered only when `OPENCODE_CONFIG_DIR` is set.
+This historical snapshot was recorded on 2026-09-17 before the 0.0.1 planning
+commit, tag, public repository, or GitHub settings were created:
 
-## In Progress
+- Worktree path:
+  `/Users/Michel.Abboud/projects/opencode-playbook/.worktrees/modular-opencode-release`
+- Intended branch: `feature/modular-opencode-release`
+- Planning base commit: `7e145c5`
+- Planned checkpoint version: `0.0.1`
+- No GitHub mutation was performed while authoring this snapshot.
 
-- Task 1 is not fully closed because the required quality re-review of
-  `c340ee5` was interrupted when this handoff was requested.
-- Task 1 checkboxes in the implementation plan describe completed implementation
-  steps; the external quality gate still remains pending.
-- Tasks 2 through 9 have not been implemented.
+Those statements describe the recording seam only. They must not be read as
+claims about present external state.
 
-## Next Steps
+## Durable resumption gates
 
-1. Run a fresh quality review of commits `214f736..c340ee5`, verifying that all
-   previous configuration-discovery findings are resolved and no new
-   contradiction was introduced.
-2. If approved, close Task 1 and dispatch the Task 2 skills implementer,
-   followed by specification and quality review.
-3. Continue Tasks 3 and 4 test-first. Incorporate the completed read-only
-   transaction analysis rather than performing a mechanical Codex rename.
-4. Continue documentation, visual implementation, verification, release review,
-   and publication in Tasks 5 through 9.
+Run these read-only discovery commands before deciding what remains:
 
-## Transaction Gotchas Already Identified
+```sh
+git branch --show-current
+git status --short
+cat VERSION
+git log -1 --oneline
+git tag -l 'checkpoint/*' --sort=version:refname
+git remote -v
+git worktree list --porcelain
 
-- Resolve the default root with `XDG_CONFIG_HOME`; do not hardcode
-  `$HOME/.config/opencode` when XDG configuration is present.
-- Keep installer staging and previous-state directories outside `skills/`.
-  OpenCode recursively discovers skills, so transaction debris beneath that
-  directory could become active configuration.
-- Reject symlinked configuration, skills, backup, checkpoint, manifest, marker,
-  and nested skill-resource paths.
-- Require an exact manifest schema and exact `COMPLETE` marker content; reject
-  duplicate, unknown, malformed, or payload/state-inconsistent entries.
-- Mask signals during recovery, guard against re-entrant rollback, and set
-  touched markers before the first possible move.
-- Add a concurrency guard so two installs or restores cannot interleave.
-- Replace ordinal fake-command failures in the Codex test model with path- or
-  argument-matched injection and synchronization files.
+gh auth status --hostname github.com
+gh api user --jq .login
+gh repo view nice-michel/opencode-playbook \
+  --json visibility,defaultBranchRef,homepageUrl,url
+git ls-remote --heads --tags origin
+gh pr list --repo nice-michel/opencode-playbook --state all \
+  --json number,state,baseRefName,headRefName,headRefOid,mergeCommit,url
+gh release list --repo nice-michel/opencode-playbook
+gh api repos/nice-michel/opencode-playbook/pages
+gh api repos/nice-michel/opencode-playbook/private-vulnerability-reporting
+```
 
-## Visual and Release Gotchas Already Identified
+Interpret them through these state-invariant gates:
 
-- Render all 42 rules as static semantic HTML; JavaScript may filter them but
-  must not be their only renderer.
-- Keep the OpenCode hero and page visually distinct from the Codex cobalt robot
-  composition. Use the approved open-mechanism/workbench concept and green-teal
-  accent.
-- Verify an isolated installation with `opencode debug skill` and a fresh
-  `opencode run` from an empty workspace so repository-local instructions cannot
-  mask a failed global install.
-- Enable Pages and private vulnerability reporting through the GitHub REST API,
-  then verify the returned state.
-- Create the GitHub release with `--verify-tag` and prove local `HEAD`, remote
-  `main`, and the peeled annotated tag resolve to the same commit.
+1. The planning checkpoint is complete only if `VERSION` is at least 0.0.1,
+   the exact planning inventory is committed, both planning reviews approve the
+   same clean tip, and peeled `checkpoint/0.0.1` identifies that tip.
+2. Planning publication is complete only if returned GitHub state proves the
+   public `nice-michel/opencode-playbook` repository exists, authentication is
+   `nice-michel`, private vulnerability reporting is enabled, and remote
+   `main`, the feature branch, and the peeled planning tag match their approved
+   local commits.
+3. Implementation progress is derived from `VERSION`, current plan checkboxes,
+   committed evidence, local and remote checkpoint refs, and the branch tip;
+   prose in this handoff never overrides those sources.
+4. Release is complete only if returned state proves the PR is merged, local
+   `main` equals remote `main` and peeled `v0.1.0`, the GitHub release fields are
+   correct, Pages is built from `main:/docs`, both public assets return final
+   HTTP 200, and both worktrees are clean.
 
-## Process State
+## Canonical source seam
 
-- No subagent remains active; the pending quality reviewer was interrupted.
-- No process was started by this project and left running.
-- PID 79786 is a pre-existing Python documentation server owned by
-  `mtls-otel-admin-successor` on port 8999. It is unrelated and must not be
-  stopped or modified by this project.
+Claude commit `5db68e347a65e511cc378b0598a6aac6655845bd`
+(`VERSION` 0.1.12) and Codex commit
+`b79080ad6f3f9605b60d4722265a5d271ea2e540` (`VERSION` 0.1.3) are read only
+through pinned `git show` and `git ls-tree` operations. Exact tree and blob
+evidence is recorded in
+[`docs/reports/2026-09-17-canonical-source-pin.md`](docs/reports/2026-09-17-canonical-source-pin.md).
 
+## Process-state rule
+
+The 2026-09-17 authoring snapshot left no project-owned long-running process.
+At every later resumption and closeout, discover process state afresh and report
+any project-owned process with its exact teardown command. Never infer current
+process state from this historical record.

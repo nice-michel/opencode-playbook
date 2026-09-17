@@ -1,24 +1,42 @@
 # Progress
 
-## 2026-09-16
+**Planning checkpoint version:** 0.0.1
 
-- Confirmed that the OpenCode edition will remain a separate repository.
-- Approved exact parity with the Codex Playbook's 42-rule `AGENTS.md`.
-- Approved OpenCode-native skills, global configuration paths, and a
-  checkpoint-first installer and restore workflow.
-- Approved a distinct visual identity within the existing playbook family.
-- Recorded the initial-release design for owner review.
-- Approved the written specification and prepared the test-first implementation
-  plan for owner review.
-- Established the governing `AGENTS.md` with verified byte-for-byte parity to
-  the Codex Playbook: 42 numbered rules and 13,126 matching bytes.
-- Accepted ADR 0001 for a separate OpenCode-native repository and documented
-  the source-to-client adaptation boundary with current official references.
-- Defined the always-loaded authority, progressive-disclosure skill layer,
-  four-target managed write set, backup root, and one resolved trust boundary.
-- Corrected the configuration model to reflect OpenCode 1.18.31 artifact
-  behavior: `OPENCODE_CONFIG_DIR` is effective for global instructions and
-  skill discovery, with an XDG-aware default when it is absent.
-- Initial-release implementation remains in progress: native skills,
-  installation and restore tooling, lifecycle tests, public documentation,
-  visual QA, and publication are later planned slices.
+**Plan-lineage date:** 2026-09-17
+
+## Corrective planning deliverables
+
+- Validated 49 stable rule identifiers, five partnership principles, a coda,
+  and thirteen canonical sections.
+- Selected a lean authority router plus sixteen OpenCode-native skills after
+  comparing a monolith, plain split files, and native skills.
+- Defined OpenCode 1.18.31 instruction, skill, root, runtime, and diagnostic
+  behavior without claiming support for another version.
+- Defined physical root canonicalization, the seventeen managed destinations,
+  format-2 transaction schemas, lock identity, symlink refusal, signal-safe
+  rollback, and named failure injection.
+- Defined isolated discovery and live model probes, the repository-owned POSIX
+  skill JSON extractor, provider/model seam, and secret-safe evidence rules.
+- Defined a distinct accessible site, GitHub security and Pages configuration,
+  publication verification, and immutable 0.1.0 release contract.
+- Preserved the prototype handoff, pinned both canonical Git-object sources,
+  and added a reproducible planning verifier with working-tree and committed
+  modes.
+- Required every complete candidate tip to receive fresh exact-tip reviews
+  before tagging and immediate branch/tag publication.
+
+## Recorded before external publication
+
+When this 0.0.1 status document was authored, implementation and external
+publication actions had not been performed in this worktree. This is a dated
+historical snapshot, not a claim about present repository or GitHub state.
+
+## Discover current execution state
+
+Use the durable gates in [`HANDOFF.md`](HANDOFF.md). In particular, derive
+progress from the current `VERSION`, clean/dirty state, plan evidence,
+checkpoint refs, remote branch SHAs, PR state, release fields, and Pages API
+response. The active implementation plan remains
+[`docs/superpowers/plans/2026-09-17-opencode-playbook-corrective-release.md`](docs/superpowers/plans/2026-09-17-opencode-playbook-corrective-release.md)
+until its acceptance criteria are proven; this file does not encode a mutable
+next-task assertion.

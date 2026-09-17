@@ -1,96 +1,108 @@
 # Architecture
 
-OpenCode Playbook is an installable documentation product with one governing
-agreement, progressively disclosed procedures, and a deliberately narrow
-write boundary.
+OpenCode Playbook is designed as an installable documentation product with one
+always-loaded authority layer, sixteen progressively disclosed subject layers,
+and a narrow reversible write boundary.
 
-## Authority and progressive disclosure
+## Selected architecture
 
-The repository-root `AGENTS.md` is the always-loaded governing authority. Its
-42 numbered rules are byte-for-byte identical to the Codex Playbook rulebook.
-It defines policy, approval gates, quality standards, verification duties, and
-safety boundaries.
+The corrective release preserves Michel's complete Claude Code doctrine: five
+partnership principles, the coda, 49 stable rule identifiers across thirteen
+sections, the closed approval model, and the same production, review, workflow,
+safety, and writing standards.
 
-The planned detailed procedures will live under `.opencode/skills/`. Once
-implemented, OpenCode will discover their metadata and load each full
-`SKILL.md` only when the procedure is relevant. Skills may explain how to
-perform work, but they cannot add authority or approval gates beyond
-`AGENTS.md`.
+The planned global `AGENTS.md` contains only what must govern before another
+file can load: identity and self-update, mantra and coda, goal and precedence,
+request classification, the complete approval table, rules 0.1–0.4, and the
+mandatory skill router. Sixteen namespaced
+`.opencode/skills/opencode-playbook-*/SKILL.md` modules will carry the detailed
+subject procedures. Skills may explain how to work; they cannot add authority
+or approval gates.
 
-## Separate repository
+The router has a measured 12 KiB ceiling: `wc -c < AGENTS.md` must not exceed
+12,288 bytes. This is a loading budget, not permission to omit or weaken any
+required authority, mantra, approval, routing, or rules 0.1–0.4 content.
 
-Claude Code, Codex, and OpenCode share doctrine but differ in configuration
-roots, discovery rules, permission models, and client UX. A separate
-OpenCode-native repository keeps installation auditable and client guidance
-unambiguous while explicit parity checks prevent unnoticed rulebook drift. The
-decision is recorded in
-[`docs/adr/0001-separate-opencode-native-repository.md`](docs/adr/0001-separate-opencode-native-repository.md).
+This decision and its alternatives are recorded in
+[`docs/adr/0002-native-progressive-disclosure.md`](docs/adr/0002-native-progressive-disclosure.md).
 
-## Installed layout and managed write set
+## OpenCode loading model
 
-The installer and restore tool resolve one managed configuration directory as:
+The resolved global configuration root is:
 
 ```sh
 ${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}
 ```
 
-An explicit `OPENCODE_CONFIG_DIR` is also an OpenCode custom configuration
-source. The same explicit value must therefore be present during installation
-and runtime verification. Without that override, the installer follows
-OpenCode's XDG-aware default.
+For OpenCode 1.18.31, a non-empty `OPENCODE_CONFIG_DIR` replaces the normal XDG
+root for global `AGENTS.md`. Global and project instructions are combined,
+global first. Native `AGENTS.md` versus compatible `CLAUDE.md` is a fallback
+choice within a discovery scope, not a replacement for the other instruction
+scope.
 
-OpenCode 1.18.31 treats the artifacts differently:
+Native skills use `.opencode/skills/<name>/SKILL.md` in a project and
+`<resolved-config-root>/skills/<name>/SKILL.md` globally. Skill discovery can
+also be additive across the normal XDG root, an explicit OpenCode root, and
+compatibility paths. That read behavior does not expand the playbook's managed
+write boundary.
 
-- The global instruction service resolves `AGENTS.md` beneath the effective
-  custom configuration directory, replacing the default root when
-  `OPENCODE_CONFIG_DIR` is set.
-- Skill discovery keeps the default XDG configuration directory and adds an
-  explicit `OPENCODE_CONFIG_DIR` to its scanned configuration sources.
+Version 0.1.0 will support stable OpenCode 1.18.31 only. Other versions require
+a new compatibility audit; OpenCode v2 is untested and unsupported.
 
-That additive read behavior does not widen the playbook's managed write or
-backup boundary; both remain confined to the one resolved directory.
+## Planned managed boundary
 
-`opencode debug paths` reports static XDG paths, not the effective custom
-configuration service, so it cannot prove whether either artifact is
-discoverable. Verification will inspect `opencode debug skill` for skills and
-use a fresh `opencode run` session for the global agreement. The source and
-runtime evidence are recorded in
-[`docs/reports/2026-09-16-source-adaptation.md`](docs/reports/2026-09-16-source-adaptation.md).
+The installer will manage one global `AGENTS.md` and exactly sixteen
+`skills/opencode-playbook-*/` directories beneath the resolved root. It will
+never mutate OpenCode JSON, authentication, providers, models, permissions,
+plugins, agents, commands, sessions, compatible external skills, or unrelated
+native skills.
 
-The supported installer will manage exactly four destinations beneath its
-resolved directory:
+Verified backups will live under `<resolved-root>/backups/`. Private staging,
+previous-state storage, and the concurrency lock will live under
+`<resolved-root>/.opencode-playbook-transactions/`, outside recursively
+discovered `skills/`.
 
-```text
-AGENTS.md
-skills/opencode-playbook-dependency-review/
-skills/opencode-playbook-quarantine/
-skills/opencode-playbook-release/
-```
+Format-2 checkpoints will record the exact managed inventory and every target's
+present or absent state. Installation and restoration will validate paths and
+types, reject symlinks and ambiguous metadata, back up and compare before the
+first move, mark targets touched before moving them, and recover through a
+signal-safe single-entry rollback path.
 
-Its trusted backup root is `<resolved-config-directory>/backups/`. The
-installer will not write `opencode.json`, credentials, providers, models,
-permissions, plugins, themes, sessions, unrelated skills, or any other user
-configuration.
+Root selection validates only the active environment path. The active raw root
+must be absolute with no `.` or `..` components; the longest existing ancestor
+is resolved with `cd -P`, and validated missing components are appended. This
+accepts OS-managed aliases above the root while refusing a symlink at the root
+or any managed/control descendant. The resulting physical root is the sole
+lock, backup, checkpoint, and restore identity, so lexical aliases cannot open
+parallel transaction namespaces.
 
-## Trust and recovery boundary
+Runtime validation isolates HOME and every XDG config/data/cache/state root.
+Discovery uses a repository-owned tested POSIX `awk` extractor for OpenCode
+1.18.31 pretty skill JSON. Live probes require an explicit provider/model and
+environment-only credential, use default text markers, and never read or copy
+authentication files.
 
-The installer-resolved configuration directory is the installation trust
-boundary. The installer and restore tool will accept only validated regular
-files, real directories, the four known managed destinations, and complete
-checkpoints directly beneath the trusted backup root. Unsafe symlinks,
-nonstandard target types, incomplete checkpoints, and restore paths outside
-that root will be refused.
+## Repository separation
 
-Before any destination write, installation and restoration will create and
-verify a private checkpoint of the current managed state. Activation will be a
-rollback-protected transaction, so failures or handled interruptions recover
-from durable state instead of leaving a partial installation.
+Claude Code, Codex, and OpenCode share doctrine but have different discovery,
+configuration, permission, and runtime validation mechanics. The separate
+OpenCode repository decision in
+[`docs/adr/0001-separate-opencode-native-repository.md`](docs/adr/0001-separate-opencode-native-repository.md)
+remains accepted. Machine-readable parity contracts will prevent the separate
+delivery from becoming silent doctrinal drift.
 
-## Current implementation state
+The canonical Claude doctrine is pinned to commit
+`5db68e347a65e511cc378b0598a6aac6655845bd`, whose `VERSION` is `0.1.12`.
+The modular Codex reference is pinned to commit
+`b79080ad6f3f9605b60d4722265a5d271ea2e540`, whose `VERSION` is `0.1.3`.
+Both are consumed directly through pinned `git show` and `git ls-tree` object
+reads with exact commit, tree, blob, version, and inventory verification;
+mutable checkout files and temporary source copies are not inputs.
 
-The governing rulebook and architectural records are present. Native skills,
-the installer, restore tooling, and lifecycle verification belong to later
-implementation slices and are not yet claimed complete.
+## Current state
 
-The complete approved design is in
-[`docs/superpowers/specs/2026-09-16-opencode-playbook-initial-release-design.md`](docs/superpowers/specs/2026-09-16-opencode-playbook-initial-release-design.md).
+This file describes the approved architecture, not completed implementation.
+The worktree still contains the historical 42-rule prototype `AGENTS.md`; no
+sixteen-skill corpus, installer, restore command, verifier, runtime suite, or
+visual site is claimed at version 0.0.1. The executable work is defined in the
+[`corrective release plan`](docs/superpowers/plans/2026-09-17-opencode-playbook-corrective-release.md).
