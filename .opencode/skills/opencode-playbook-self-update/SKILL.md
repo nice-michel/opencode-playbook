@@ -18,12 +18,38 @@ because this skill exists.
 2. Fetch the public source of truth without authentication:
 
    ```sh
-   curl -fsS --proto =https --max-redirs 0 https://raw.githubusercontent.com/nice-michel/opencode-playbook/main/VERSION
+   version_response=$(
+     curl --silent --show-error \
+       --proto '=https' \
+       --write-out '\n%{http_code}' \
+       'https://raw.githubusercontent.com/nice-michel/opencode-playbook/main/VERSION'
+   ) || {
+     printf '%s\n' 'Failed to fetch the available OpenCode Playbook version.' >&2
+     exit 1
+   }
+   newline='
+   '
+   version_status=${version_response##*"$newline"}
+   version_body=${version_response%"$newline$version_status"}
+
+   if [ "$version_status" != 200 ] ||
+     ! printf '%s' "$version_body" | awk '
+       NR != 1 { invalid=1 }
+       !/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/ { invalid=1 }
+       END { exit invalid || NR != 1 }
+     '
+   then
+     printf '%s\n' 'Failed to fetch one bare SemVer line with HTTP status 200.' >&2
+     exit 1
+   fi
+   available_version=$(printf '%s' "$version_body")
    ```
 
-3. Validate that the response is one bare semantic version. A failed fetch,
-   redirect to an unexpected host, HTML response, or malformed value is a
-   failed check; report it instead of guessing from tags or memory.
+   Because the command omits `--location`, curl does not follow redirects; the
+   parser requires the exact HTTP status `200` and rejects every redirect,
+   error status, HTML response, empty body, extra line, or malformed version.
+3. Use only the validated `available_version`. A failed fetch or validation is
+   a failed check; report it instead of guessing from tags or memory.
 4. Compare semantic-version components numerically. Equal means current; a
    lower installed version means an update is available; a higher installed
    version means the local copy may be ahead or tailored and must not be

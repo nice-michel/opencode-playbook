@@ -55,6 +55,7 @@ cleanup() {
     actual-mantra \
     actual-report-owners \
     actual-report-quality \
+    actual-self-update-fetch \
     all-line-start-ids \
     all-line-start-occurrences \
     approval-rows \
@@ -62,6 +63,7 @@ cleanup() {
     expected-occurrences \
     expected-report-owners \
     expected-report-quality \
+    expected-self-update-fetch \
     expected-version \
     ids \
     injected-line-start-occurrences \
@@ -116,6 +118,19 @@ collect_line_start_numeric_occurrences() {
       }
     ' "$source_file" >> "$output"
   done
+}
+valid_self_update_response() {
+  simulated_response=$1
+  response_newline='
+'
+  simulated_status=${simulated_response##*"$response_newline"}
+  simulated_body=${simulated_response%"$response_newline$simulated_status"}
+  [ "$simulated_status" = 200 ] || return 1
+  printf '%s' "$simulated_body" | awk '
+    NR != 1 { invalid=1 }
+    !/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/ { invalid=1 }
+    END { exit invalid || NR != 1 }
+  '
 }
 
 cat > "$test_root/skills" <<'EOF'
@@ -291,8 +306,46 @@ if [ "$count" -eq 16 ]; then pass 'all and only 16 managed native skills'; else 
 if [ "$extra_managed" -eq 16 ]; then pass 'no extra managed skill directories exist'; else fail "managed skill directory count: $extra_managed"; fi
 self_update=.opencode/skills/opencode-playbook-self-update/SKILL.md
 if ! grep -Fq './scripts/install.sh' "$self_update" && ! grep -Fq './scripts/restore.sh' "$self_update" && grep -Fq 'release_checkout' "$self_update" && grep -Fq '"$release_checkout/scripts/install.sh" --replace-agents' "$self_update" && grep -Fq '"$release_checkout/scripts/restore.sh"' "$self_update" && grep -Fq 'exact approved public release' "$self_update" && grep -Fiq 'verify the checkout revision, VERSION, and repository verification' "$self_update" && grep -Fq 'automated safe replacement is unavailable' "$self_update"; then pass 'self-update binds every procedure path to a verified release checkout'; else fail 'self-update has an unbound path or lacks the verified release-checkout procedure'; fi
-if grep -Fq 'curl -fsS --proto =https --max-redirs 0' "$self_update"; then pass 'self-update fetch rejects redirects and non-HTTPS'; else fail 'self-update fetch must be HTTPS-only and reject redirects'; fi
-if grep -Fq '"${env:USERNAME}:(OI)(CI)F"' .opencode/skills/opencode-playbook-platform-windows/SKILL.md && ! grep -Fq 'pkill -9 -f' .opencode/skills/opencode-playbook-platform-linux/SKILL.md && ! grep -Fq 'pkill -9 -f' .opencode/skills/opencode-playbook-platform-macos/SKILL.md; then pass 'platform emergency commands use safe ACL interpolation and exact PIDs'; else fail 'platform ACL or emergency kill command is unsafe'; fi
+cat > "$test_root/expected-self-update-fetch" <<'EOF'
+version_response=$(
+  curl --silent --show-error \
+    --proto '=https' \
+    --write-out '\n%{http_code}' \
+    'https://raw.githubusercontent.com/nice-michel/opencode-playbook/main/VERSION'
+) || {
+  printf '%s\n' 'Failed to fetch the available OpenCode Playbook version.' >&2
+  exit 1
+}
+newline='
+'
+version_status=${version_response##*"$newline"}
+version_body=${version_response%"$newline$version_status"}
+
+if [ "$version_status" != 200 ] ||
+  ! printf '%s' "$version_body" | awk '
+    NR != 1 { invalid=1 }
+    !/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/ { invalid=1 }
+    END { exit invalid || NR != 1 }
+  '
+then
+  printf '%s\n' 'Failed to fetch one bare SemVer line with HTTP status 200.' >&2
+  exit 1
+fi
+available_version=$(printf '%s' "$version_body")
+EOF
+awk '
+  /^2\. Fetch the public source of truth without authentication:/ { in_section=1 }
+  in_section && /^   ```sh$/ { capture=1; next }
+  capture && /^   ```$/ { exit }
+  capture { sub(/^   /, ""); print }
+' "$self_update" > "$test_root/actual-self-update-fetch"
+if cmp -s "$test_root/expected-self-update-fetch" "$test_root/actual-self-update-fetch"; then pass 'self-update fetch has exact HTTPS, status, and SemVer parser contract'; else fail 'self-update fetch command or parser differs from literal contract'; fi
+valid_response=$(printf '0.0.2\n\n200')
+redirect_response=$(printf '0.0.2\n\n302')
+if valid_self_update_response "$valid_response"; then pass 'self-update response validator accepts HTTP 200 plus one bare SemVer line'; else fail 'self-update response validator rejected valid HTTP 200 fixture'; fi
+if valid_self_update_response "$redirect_response"; then fail 'self-update response validator accepted simulated HTTP 302'; else pass 'self-update response validator rejects simulated HTTP 302'; fi
+if grep -Fq 'does not follow redirects' "$self_update" && grep -Fq 'requires the exact HTTP status `200`' "$self_update"; then pass 'self-update text explains behavioral redirect rejection'; else fail 'self-update text must explain no-follow and exact-status behavior'; fi
+if grep -Fq '"${env:USERNAME}:(OI)(CI)F"' .opencode/skills/opencode-playbook-platform-windows/SKILL.md && grep -Fq 'reject any explicit `Everyone`, `Users`, or `Authenticated Users` access-control entry' .opencode/skills/opencode-playbook-platform-windows/SKILL.md && grep -Fq 'previously validated exact PID' .opencode/skills/opencode-playbook-platform-linux/SKILL.md && grep -Fq 'previously validated exact PID' .opencode/skills/opencode-playbook-platform-macos/SKILL.md && ! grep -Fq 'pkill -9 -f' .opencode/skills/opencode-playbook-platform-linux/SKILL.md && ! grep -Fq 'pkill -9 -f' .opencode/skills/opencode-playbook-platform-macos/SKILL.md; then pass 'platform emergency commands use safe ACL interpolation, ACE verification, and exact PIDs'; else fail 'platform ACL or emergency kill command is unsafe'; fi
 
 : > "$test_root/occurrences"
 for file in AGENTS.md .opencode/skills/opencode-playbook-*/SKILL.md
@@ -486,7 +539,7 @@ Coda	Mechanically adapted	Exact independent-model coda is preserved without word
 10.1	Mechanically adapted	Destructive-action approval authority is unchanged; loading moves from `rules/DESTRUCTIVE.md` to `.opencode/skills/opencode-playbook-destructive/SKILL.md`.
 10.2	Mechanically adapted	Validation and command-separation safeguards are unchanged; loading moves from `rules/DESTRUCTIVE.md` to `.opencode/skills/opencode-playbook-destructive/SKILL.md`.
 10.3	Mechanically adapted	Recoverable quarantine behavior is unchanged; loading moves from `rules/QUARANTINE.md` to `.opencode/skills/opencode-playbook-quarantine/SKILL.md`.
-11.1	Mechanically adapted	Platform behavior remains mutually exclusive; the three `rules/platform/*.md` owners become three `.opencode/skills/opencode-playbook-platform-*/SKILL.md` owners selected through the OpenCode skill router.
+11.1	Mechanically adapted	Platform behavior remains mutually exclusive; the three `rules/platform/*.md` owners move to three OpenCode-routed `.opencode/skills/opencode-playbook-platform-*/SKILL.md` paths, Linux/macOS broad pattern kills become validated exact-PID termination, and Windows uses braced `${env:USERNAME}` identity interpolation and explicitly verifies that unwanted `Everyone`, `Users`, and `Authenticated Users` access-control entries (ACEs) are absent.
 12.1	Mechanically adapted	Answer-first and next-action reply shaping is unchanged; loading moves from `rules/WRITING.md` to `.opencode/skills/opencode-playbook-writing/SKILL.md`.
 12.2	Mechanically adapted	Per-turn state restatement is unchanged; loading moves from `rules/WRITING.md` to `.opencode/skills/opencode-playbook-writing/SKILL.md`.
 12.3	Mechanically adapted	Plain-language explanation behavior is unchanged; loading moves from `rules/WRITING.md` to `.opencode/skills/opencode-playbook-writing/SKILL.md`.
