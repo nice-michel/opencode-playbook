@@ -213,9 +213,15 @@ I want an independent, opinionated model that is not afraid to say what it reall
 EOF
 
 sed 's/\r$//' AGENTS.md > "$test_root/normalized-agents"
-for path in AGENTS.md VERSION config/managed-skills.txt config/rule-manifest.tsv docs/reports/2026-09-17-rule-parity-matrix.md
+if awk '
+  /^[[:space:]]*path=/ { unsafe=1 }
+  /^[[:space:]]*for[[:space:]]+path([[:space:]]|$)/ { unsafe=1 }
+  /^[[:space:]]*read[[:space:]].*-r[[:space:]]+path([[:space:]]|$)/ { unsafe=1 }
+  END { exit unsafe ? 1 : 0 }
+' tests/rulebook_test.sh; then pass 'harness avoids zsh PATH-tied scalar path'; else fail 'harness assigns zsh PATH-tied scalar path'; fi
+for required_file in AGENTS.md VERSION config/managed-skills.txt config/rule-manifest.tsv docs/reports/2026-09-17-rule-parity-matrix.md
 do
-  if [ -f "$path" ]; then pass "$path exists"; else fail "$path is missing"; fi
+  if [ -f "$required_file" ]; then pass "$required_file exists"; else fail "$required_file is missing"; fi
 done
 bytes=$(wc -c < AGENTS.md | tr -d ' ')
 if [ "$bytes" -le 12288 ]; then pass "AGENTS.md byte budget: $bytes"; else fail "AGENTS.md is $bytes bytes; max 12288"; fi
