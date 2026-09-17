@@ -4,7 +4,17 @@ All notable changes to OpenCode Playbook are recorded here. Dates are absolute.
 
 ## Unreleased
 
-No implementation is claimed beyond the planning checkpoint below.
+## 0.0.2 — 2026-09-17
+
+### Added
+
+- Complete native OpenCode progressive-disclosure rulebook: lean `AGENTS.md`, 16 skills, exact managed inventory, canonical 49-rule manifest, parity report, and POSIX verification.
+
+### Changed
+
+- Replaced the unpublished 42-rule prototype and three-skill plan with complete native OpenCode rule parity.
+
+Installer, restoration, runtime validation, and site delivery are not claimed by this rulebook release.
 
 ## 0.0.1 — 2026-09-17
 

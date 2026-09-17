@@ -1,0 +1,16 @@
+opencode-playbook-code
+opencode-playbook-collaboration
+opencode-playbook-destructive
+opencode-playbook-documentation
+opencode-playbook-environment
+opencode-playbook-platform-linux
+opencode-playbook-platform-macos
+opencode-playbook-platform-windows
+opencode-playbook-quarantine
+opencode-playbook-repository
+opencode-playbook-reviews
+opencode-playbook-self-update
+opencode-playbook-subagents
+opencode-playbook-testing
+opencode-playbook-workflow
+opencode-playbook-writing

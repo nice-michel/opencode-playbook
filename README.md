@@ -2,70 +2,24 @@
 
 **Do the right thing, not the lazy or easy thing.**
 
-OpenCode Playbook is the planned OpenCode-native edition of Michel's complete
-agentic working agreement. The approved corrective architecture preserves all
-49 canonical rules, five partnership principles, and the coda while using a
-lean global authority router and sixteen native skills for progressive
-disclosure.
+OpenCode Playbook is an implemented native OpenCode progressive-disclosure rulebook. Version 0.0.2 provides the complete always-loaded authority router and on-demand doctrine corpus.
 
-## Status
+## Current rulebook
 
-**Version 0.0.1 is a planning checkpoint. No installable release is claimed.**
+- `AGENTS.md` carries the complete five-principle partnership mantra and coda, authority, request classifications, closed approval table, rules 0.1–0.4, mandatory router, version carrier, and OpenCode loading summary.
+- Sixteen native repository skills live under `.opencode/skills/opencode-playbook-*/SKILL.md` and own rules 1.1–12.4.
+- `config/managed-skills.txt` and `config/rule-manifest.tsv` make installation scope and canonical rule ownership auditable.
+- The [parity matrix](docs/reports/2026-09-17-rule-parity-matrix.md) records every mechanical adaptation without silently dropping doctrine.
 
-Before implementation, this complete planning checkpoint is committed, then
-its exact tip receives independent specification and quality reviews. Only the
-finally approved clean tip is tagged `checkpoint/0.0.1` and published with
-local `main` and the feature branch to the approved public repository. Private
-vulnerability reporting is enabled and verified immediately after repository
-creation. Later task checkpoints follow the same exact-tip rule and push
-immediately.
+## Supported client
 
-The 2026-09-16 prototype established useful OpenCode discovery and transaction
-research, but its 42-rule monolith and three-skill plan are superseded. The
-current worktree still contains that prototype rule file until implementation
-begins.
+The rulebook targets stable OpenCode 1.18.31 exactly. OpenCode v2 and all other versions are untested and unsupported. The global root is non-empty `OPENCODE_CONFIG_DIR`, otherwise `${XDG_CONFIG_HOME:-$HOME/.config}/opencode`.
 
-The approved current artifacts are:
+Repository skills are native `.opencode/skills` entries; installed skills belong under the resolved global root's `skills/` directory. Compatibility skill locations remain additive and are not managed.
 
-- [Corrective design](docs/superpowers/specs/2026-09-17-opencode-playbook-corrective-design.md)
-- [Executable TDD release plan](docs/superpowers/plans/2026-09-17-opencode-playbook-corrective-release.md)
-- [Progressive-disclosure decision](docs/adr/0002-native-progressive-disclosure.md)
-- [Canonical plan index](PLAN.md)
-- [Pinned canonical Claude and Codex sources](docs/reports/2026-09-17-canonical-source-pin.md)
-- [Current handoff](HANDOFF.md) and [preserved prototype handoff](docs/handoffs/2026-09-16-prototype-handoff.md)
+## Scope boundary
 
-The planning checkpoint also includes truthful initial contributor, security,
-environment, and backlog records. They describe current planning-stage checks,
-not implementation commands that do not yet exist.
-
-## Planned product
-
-Version 0.1.0 will provide:
-
-- one lean global `AGENTS.md` containing authority, classification, the closed
-  approval table, rules 0.1–0.4, and mandatory skill routing;
-- sixteen `.opencode/skills/opencode-playbook-*/SKILL.md` modules preserving
-  the complete subject doctrine;
-- a backup-first installer and reversible restore command scoped to one
-  physically normalized XDG-aware OpenCode configuration root;
-- isolated runtime proof against stable OpenCode 1.18.31 using a tested POSIX
-  discovery parser and an explicit environment-only live model seam; and
-- a distinct accessible static visual playbook published from `main:/docs`.
-
-OpenCode v2 and versions other than 1.18.31 are not supported by the planned
-0.1.0 release without a new compatibility audit.
-
-## Safety boundary
-
-The planned installer manages only the global agreement, the sixteen
-namespaced skills, and private recovery metadata. It will not mutate
-`opencode.json`, `opencode.jsonc`, authentication, providers, models,
-permissions, plugins, sessions, or unrelated skills.
-
-Planning integrity is reproducible through
-`scripts/verify_planning.sh --working-tree` before the 0.0.1 commit and
-`scripts/verify_planning.sh --committed <base>` afterward. The verifier owns an
-explicit inventory, including files that begin untracked.
+This version establishes the rulebook only. It does not claim an installer, restoration workflow, runtime probe suite, or publication site as complete. A later task may implement those separately.
 
 ## License
 

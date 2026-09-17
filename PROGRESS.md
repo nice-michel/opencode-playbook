@@ -1,10 +1,18 @@
 # Progress
 
-**Planning checkpoint version:** 0.0.1
+**Rulebook version:** 0.0.2
 
 **Plan-lineage date:** 2026-09-17
 
-## Corrective planning deliverables
+## Implemented rulebook
+
+- Replaced the unpublished prototype with the lean native OpenCode authority router.
+- Added 16 native repository skills containing all 49 canonical rule identifiers.
+- Added the exact managed-skill inventory, canonical ownership manifest, parity matrix, and POSIX verification.
+
+Installer, recovery, runtime probes, visual site, and publication remain separate tasks and are not claimed complete here.
+
+## Corrective planning provenance
 
 - Validated 49 stable rule identifiers, five partnership principles, a coda,
   and thirteen canonical sections.

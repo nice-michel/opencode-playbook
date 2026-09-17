@@ -1,5 +1,9 @@
 # Plan
 
+## Task 1 status
+
+Version 0.0.2 implements the native OpenCode progressive-disclosure rulebook: the router, 16 skills, ownership manifest, parity report, and executable verification. Installer, restoration, runtime proof, site, and release operations remain future plan tasks.
+
 ## Active plan lineage
 
 The canonical corrective design is
