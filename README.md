@@ -15,7 +15,9 @@ OpenCode Playbook is an implemented native OpenCode progressive-disclosure ruleb
 
 The rulebook targets stable OpenCode 1.18.31 exactly. OpenCode v2 and all other versions are untested and unsupported. The global root is non-empty `OPENCODE_CONFIG_DIR`, otherwise `${XDG_CONFIG_HOME:-$HOME/.config}/opencode`.
 
-Repository skills are native `.opencode/skills` entries; installed skills belong under the resolved global root's `skills/` directory. Compatibility skill locations remain additive and are not managed.
+The always-loaded mantra is the canonical five-principle partnership contract and coda from the pinned Claude source, preserved word for word in `AGENTS.md`.
+
+Repository skills are native `.opencode/skills` entries. `OPENCODE_CONFIG_DIR` replaces the XDG global `AGENTS.md`, while native skill discovery retains the static XDG config skill directory and adds the selected custom-root skill directory; compatibility locations may add more. A future installer manages only the selected resolved root.
 
 ## Scope boundary
 

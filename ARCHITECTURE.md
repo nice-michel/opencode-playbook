@@ -12,8 +12,8 @@ OpenCode Playbook has an implemented native OpenCode progressive-disclosure rule
 
 The supported release target is stable OpenCode 1.18.31 exactly; v2 and all other versions are untested and unsupported. A non-empty `OPENCODE_CONFIG_DIR` selects the global root; otherwise it is `${XDG_CONFIG_HOME:-$HOME/.config}/opencode`. OpenCode combines global and project `AGENTS.md`, loading global first and letting project instructions win a conflict. A first matching `AGENTS.md` versus `CLAUDE.md` is only a within-scope fallback.
 
-Repository skills use `.opencode/skills/`; installed skills use `<OpenCode config root>/skills/`. Native skill loading is on demand. Compatibility `.agents/skills` and `.claude/skills` remain additive and unmanaged.
+Repository skills use `.opencode/skills/`; native skill loading is on demand. Unlike global `AGENTS.md`, native skill discovery remains additive: it retains the static XDG config skill directory and adds the selected custom-root skill directory. Compatibility `.agents/skills` and `.claude/skills` may add more and remain unmanaged.
 
 ## Managed boundary
 
-The future installer is constrained to `AGENTS.md` and the 16 namespaced skills. It must not manage `opencode.json`, `opencode.jsonc`, authentication, providers, plugins, sessions, or unrelated skills. Installer, restoration, runtime validation, and site delivery are intentionally not claimed as implemented by this rulebook release.
+The future installer is constrained to `AGENTS.md` and the 16 namespaced skills at its selected resolved root only. It must not manage other discovery roots, `opencode.json`, `opencode.jsonc`, authentication, providers, plugins, sessions, or unrelated skills. Installer, restoration, runtime validation, and site delivery are intentionally not claimed as implemented by this rulebook release.

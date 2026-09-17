@@ -9,6 +9,7 @@
 - Replaced the unpublished prototype with the lean native OpenCode authority router.
 - Added 16 native repository skills containing all 49 canonical rule identifiers.
 - Added the exact managed-skill inventory, canonical ownership manifest, parity matrix, and POSIX verification.
+- Verified exact canonical mantra fidelity, per-rule Claude-to-OpenCode ownership evidence, and future-safe self-update behavior.
 
 Installer, recovery, runtime probes, visual site, and publication remain separate tasks and are not claimed complete here.
 

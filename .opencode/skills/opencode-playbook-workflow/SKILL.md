@@ -11,7 +11,7 @@ description: Apply OpenCode Playbook workflow rules 6.1-6.4 before version alloc
 
 **Vocabulary.** A **task** is one unit of work that closes with rules 6.1 and 6.2. A **plan** is any work that earns a `PLAN.md` entry — more than one task, or anything touching architecture, a public API, storage, or security; it passes the plan gate (rule 7.1) once. A **phase** is a named group of tasks inside a plan that ends in a releasable state; the plan names its phases, and each closes with rule 6.3. **Inside a phase the planner names milestones and batches:** a **milestone** is a point where something real can be shown working end to end — a vertical slice in rule 1.1's sense — named in the plan with the demo that proves it; a **batch** is 3–10 tasks grouped for deep review (rules 3.1–3.2), boundaries written into the plan. The ladder is **task → batch → milestone → phase**, and a phase ends in a **release**. Small plans collapse levels — a single-task fix has none, a short plan may be tasks straight to a release — but the review tier of whatever level closes never drops (rule 3.1). A single-task fix needs no plan and no phase.
 
-**Git identity, every repo:** commits use `29182417+michelabboud@users.noreply.github.com`. If a co-author trailer is used, prefer `Co-Authored-By: OpenCode <noreply@openai.com>`.
+**Git identity, every repo:** commits use `29182417+michelabboud@users.noreply.github.com`. Add a co-author trailer only when a real identified co-author is appropriate; do not invent one for a client or tool.
 
 6.1 **After each task** (the definition of done — run the whole chain, then move on):
     1. Code meets the standards above (rules 1.1–1.5)

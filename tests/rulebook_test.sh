@@ -81,12 +81,12 @@ cat > "$test_root/ids" <<'EOF'
 EOF
 cat > "$test_root/mantra" <<'EOF'
 1. **We are partners.** I work with AI models as partners, not as tools that say yes. Meet me as one.
-2. **Say what you actually think.** Give me your honest best judgment, led with your recommendation and its reason. No pleasing, flattery, or disguising “this is worse” as “interesting.” If you do not know, say so.
-3. **Push back on real things.** Debate a wrong assumption, a hidden cost, or a better route. Never debate for theater.
-4. **Being overruled changes nothing.** When I decide differently, keep your dissent on record and execute my decision fully. Reopen it only with new evidence or a newly discovered cost.
-5. **Do the right thing, not the lazy or easy thing.** When these rules do not cover a case, optimize for production use by many users across environments and over time. Quality is non-negotiable; work that only looks finished or claims without evidence is worthless.
+2. **Say what you actually think.** I want your honest best judgment, led with your recommendation and the reason for it. No pleasing, no flattery, no softening "this is worse" into "interesting idea". If you don't know, say that too. I do not want pleasers.
+3. **Push back — on real things.** Healthy debate is the ingredient that makes this partnership work, and I ask for a lot of it. Debate substance: a wrong assumption, a cost I'm not seeing, a better route. Never debate for the sake of debate.
+4. **Being overruled changes nothing.** Sometimes I listen to you, sometimes to me — that is how partners work. When I decide differently, your dissent stays on record and my decision is executed in full; re-open it only with something new (evidence, a cost I missed), never to win the point. And it never lowers your voice next time.
+5. **The motto — do the right thing, not the lazy or easy thing.** No shortcuts, no looking for one. When the rules don't cover a case, optimize for what survives real production use by many users on different environments, and what survives time. Quality is not negotiable; *theater* about quality — code that looks done but isn't, or claims that aren't verified — is worthless.
 
-I want an independent, opinionated model that is not afraid to say what it really thinks. Agreeing with me is not the job.
+I want an independent, opinionated model that is not afraid to say what it really thinks. That is the job. Agreeing with me is not.
 EOF
 
 for path in AGENTS.md VERSION config/managed-skills.txt config/rule-manifest.tsv docs/reports/2026-09-17-rule-parity-matrix.md
@@ -95,7 +95,8 @@ do
 done
 bytes=$(wc -c < AGENTS.md | tr -d ' ')
 if [ "$bytes" -le 12288 ]; then pass "AGENTS.md byte budget: $bytes"; else fail "AGENTS.md is $bytes bytes; max 12288"; fi
-if grep -Fxf "$test_root/mantra" AGENTS.md >/dev/null 2>&1; then pass 'exact full mantra and coda'; else fail 'full mantra or coda differs'; fi
+awk '/^1\. \*\*We are partners\./ { capture=1 } /^\*\*This rulebook is version/ { exit } capture { print }' AGENTS.md | sed '${/^$/d;}' > "$test_root/actual-mantra"
+if cmp -s "$test_root/mantra" "$test_root/actual-mantra"; then pass 'exact complete normalized Claude mantra and coda'; else fail 'complete normalized mantra and coda differs from the canonical literal'; fi
 if [ "$(cat VERSION)" = 0.0.2 ] && grep -Fq '**This rulebook is version 0.0.2**' AGENTS.md; then pass 'version carriers match'; else fail 'VERSION and AGENTS must match 0.0.2'; fi
 
 for section in '## Authority' '## Classify the Request Before Acting' '## Approval Table — the Complete List' '## Mandatory Skill Router' '## OpenCode Loading Model' 'github.com/nice-michel/opencode-playbook' 'stable OpenCode 1.18.31 exactly'
@@ -104,6 +105,14 @@ do
 done
 rows=$(sed -n '/^## Approval Table — the Complete List$/,/^## Mandatory Skill Router$/p' AGENTS.md | grep -Ec '^\| ' || true)
 if [ "$rows" -eq 10 ]; then pass 'approval table has header and nine closed rows'; else fail "approval table has $rows lines; expected 10"; fi
+cat > "$test_root/loading-lines" <<'EOF'
+- OpenCode combines global and project `AGENTS.md`: global instructions load first and project instructions win a conflict. A custom root replaces the default XDG global `AGENTS.md`.
+- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. The installer manages only the selected resolved root.
+EOF
+while IFS= read -r loading_line
+do
+  if grep -Fq -- "$loading_line" AGENTS.md; then pass 'exact OpenCode loading semantics'; else fail "missing OpenCode loading semantic: $loading_line"; fi
+done < "$test_root/loading-lines"
 grep -Eho '^[0-9]+\.[0-9]+ \*\*' AGENTS.md | sed 's/ \*\*$//' > "$test_root/router-ids" || true
 printf '0.1\n0.2\n0.3\n0.4\n' > "$test_root/core-ids"
 if cmp -s "$test_root/core-ids" "$test_root/router-ids"; then pass 'router carries only 0.1-0.4 bodies'; else fail 'router must carry exactly 0.1-0.4 bodies'; fi
@@ -117,12 +126,14 @@ if [ "$(grep -Fxc "11.1${tab}.opencode/skills/opencode-playbook-platform-*/SKILL
 while IFS= read -r skill
 do
   file=".opencode/skills/$skill/SKILL.md"
-  if [ -f "$file" ] && grep -Fxq "name: $skill" "$file" && [ "$(grep -Ec '^description: .+' "$file")" -eq 1 ]; then pass "$skill metadata"; else fail "$skill metadata or file"; fi
+  if [ -d ".opencode/skills/$skill" ] && [ ! -L ".opencode/skills/$skill" ] && [ -f "$file" ] && [ ! -L "$file" ] && grep -Fxq "name: $skill" "$file" && [ "$(grep -Ec '^description: .+' "$file")" -eq 1 ]; then pass "$skill metadata and native file type"; else fail "$skill metadata, directory, or file type"; fi
   matches=$(sed -n '/^## Mandatory Skill Router$/,/^## OpenCode Loading Model$/p' AGENTS.md | grep -Foc "$skill" || true)
   if [ "$matches" -eq 1 ]; then pass "$skill router mention"; else fail "$skill router mention count $matches"; fi
 done < "$test_root/skills"
 count=$(find .opencode/skills -mindepth 2 -maxdepth 2 -name SKILL.md -path '*/opencode-playbook-*/*' 2>/dev/null | wc -l | tr -d ' ')
 if [ "$count" -eq 16 ]; then pass 'all and only 16 managed native skills'; else fail "managed native skills: $count"; fi
+extra_managed=$(find .opencode/skills -mindepth 1 -maxdepth 1 -type d -name 'opencode-playbook-*' | wc -l | tr -d ' ')
+if [ "$extra_managed" -eq 16 ]; then pass 'no extra managed skill directories exist'; else fail "managed skill directory count: $extra_managed"; fi
 
 : > "$test_root/occurrences"
 for file in AGENTS.md .opencode/skills/opencode-playbook-*/SKILL.md
@@ -146,6 +157,7 @@ if [ "$ownership" -eq 0 ]; then pass 'every body appears in declared manifest ow
 if grep -Fq 'Linux or WSL' .opencode/skills/opencode-playbook-platform-linux/SKILL.md 2>/dev/null && grep -Fq 'only when running on macOS' .opencode/skills/opencode-playbook-platform-macos/SKILL.md 2>/dev/null && grep -Fq 'only when running on native Windows' .opencode/skills/opencode-playbook-platform-windows/SKILL.md 2>/dev/null; then pass 'platform semantics are mutually exclusive'; else fail 'platform semantics are not exclusive'; fi
 grep -E '^\| [0-9]+\.[0-9]+ \|' docs/reports/2026-09-17-rule-parity-matrix.md 2>/dev/null | sed -E 's/^\| ([0-9]+\.[0-9]+) \|.*$/\1/' > "$test_root/report-ids" || true
 if cmp -s "$test_root/ids" "$test_root/report-ids"; then pass 'parity matrix proves all 49 IDs'; else fail 'parity matrix omits or reorders IDs'; fi
+if [ "$(grep -Ec '^\| Doctrine \|' docs/reports/2026-09-17-rule-parity-matrix.md || true)" -eq 6 ] && grep -Fq '| Claude owner/source | OpenCode owner/path | Disposition | Specific adaptation reason |' docs/reports/2026-09-17-rule-parity-matrix.md; then pass 'parity matrix has six doctrine rows and ownership evidence columns'; else fail 'parity matrix lacks doctrine rows or ownership evidence columns'; fi
 if grep -RInE '(^|[^A-Za-z])Codex([^A-Za-z]|$)|\.agents/skills|\$CODEX_HOME|Claude Code|\.claude/skills|42-rule|3-skill|TBD|placeholder' AGENTS.md .opencode config docs/reports/2026-09-17-rule-parity-matrix.md 2>/dev/null | grep -vi compatibility >/dev/null; then fail 'stale client wording or placeholder found'; else pass 'no stale client wording or placeholders'; fi
 if grep -Fq 'implemented native OpenCode progressive-disclosure rulebook' README.md && grep -Fq '16 native repository skills' ARCHITECTURE.md && ! grep -Eiq '(installer|runtime).*(is complete|has been completed|implemented and ready)' README.md ARCHITECTURE.md; then pass 'current docs do not overclaim installer/runtime'; else fail 'README or ARCHITECTURE current-state claim invalid'; fi
 

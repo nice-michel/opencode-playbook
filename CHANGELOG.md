@@ -13,6 +13,7 @@ All notable changes to OpenCode Playbook are recorded here. Dates are absolute.
 ### Changed
 
 - Replaced the unpublished 42-rule prototype and three-skill plan with complete native OpenCode rule parity.
+- Corrected the always-loaded mantra to the exact pinned canonical wording; clarified additive native-skill discovery and made self-update refuse replacement until future install and restore procedures exist.
 
 Installer, restoration, runtime validation, and site delivery are not claimed by this rulebook release.
 
