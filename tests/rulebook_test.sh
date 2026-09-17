@@ -242,6 +242,59 @@ if [ "$ownership" -eq 0 ]; then pass 'every body appears in declared manifest ow
 if grep -Fq 'Linux or WSL' .opencode/skills/opencode-playbook-platform-linux/SKILL.md 2>/dev/null && grep -Fq 'only when running on macOS' .opencode/skills/opencode-playbook-platform-macos/SKILL.md 2>/dev/null && grep -Fq 'only when running on native Windows' .opencode/skills/opencode-playbook-platform-windows/SKILL.md 2>/dev/null; then pass 'platform semantics are mutually exclusive'; else fail 'platform semantics are not exclusive'; fi
 grep -E '^\| [0-9]+\.[0-9]+ \|' docs/reports/2026-09-17-rule-parity-matrix.md 2>/dev/null | sed -E 's/^\| ([0-9]+\.[0-9]+) \|.*$/\1/' > "$test_root/report-ids" || true
 if cmp -s "$test_root/ids" "$test_root/report-ids"; then pass 'parity matrix proves all 49 IDs'; else fail 'parity matrix omits or reorders IDs'; fi
+cat > "$test_root/expected-report-owners" <<'EOF'
+0.1	rules/AUTHORITY.md	AGENTS.md
+0.2	rules/AUTHORITY.md	AGENTS.md
+0.3	rules/AUTHORITY.md	AGENTS.md
+0.4	rules/AUTHORITY.md	AGENTS.md
+1.1	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+1.2	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+1.3	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+1.4	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+1.5	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+1.6	rules/CODE.md	.opencode/skills/opencode-playbook-code/SKILL.md
+2.1	rules/TESTING.md	.opencode/skills/opencode-playbook-testing/SKILL.md
+2.2	rules/TESTING.md	.opencode/skills/opencode-playbook-testing/SKILL.md
+2.3	rules/TESTING.md	.opencode/skills/opencode-playbook-testing/SKILL.md
+3.1	rules/REVIEWS.md	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.2	rules/REVIEWS.md	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.3	rules/REVIEWS.md	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.4	rules/REVIEWS.md	.opencode/skills/opencode-playbook-reviews/SKILL.md
+4.1	rules/DOCS.md	.opencode/skills/opencode-playbook-documentation/SKILL.md
+4.2	rules/DOCS.md	.opencode/skills/opencode-playbook-documentation/SKILL.md
+4.3	rules/DOCS.md	.opencode/skills/opencode-playbook-documentation/SKILL.md
+5.1	rules/REPO.md	.opencode/skills/opencode-playbook-repository/SKILL.md
+5.2	rules/REPO.md	.opencode/skills/opencode-playbook-repository/SKILL.md
+5.3	rules/REPO.md	.opencode/skills/opencode-playbook-repository/SKILL.md
+6.1	rules/WORKFLOW.md	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.2	rules/WORKFLOW.md	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.3	rules/WORKFLOW.md	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.4	rules/WORKFLOW.md	.opencode/skills/opencode-playbook-workflow/SKILL.md
+7.1	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.2	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.3	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.4	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.5	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.6	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.7	rules/COLLABORATION.md	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+8.1	rules/SUBAGENTS.md	.opencode/skills/opencode-playbook-subagents/SKILL.md
+9.1	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.2	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.3	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.4	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.5	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.6	rules/ENVIRONMENT.md	.opencode/skills/opencode-playbook-environment/SKILL.md
+10.1	rules/DESTRUCTIVE.md	.opencode/skills/opencode-playbook-destructive/SKILL.md
+10.2	rules/DESTRUCTIVE.md	.opencode/skills/opencode-playbook-destructive/SKILL.md
+10.3	rules/QUARANTINE.md	.opencode/skills/opencode-playbook-quarantine/SKILL.md
+11.1	rules/platform/LINUX.md; rules/platform/MACOS.md; rules/platform/WINDOWS.md	.opencode/skills/opencode-playbook-platform-linux/SKILL.md; .opencode/skills/opencode-playbook-platform-macos/SKILL.md; .opencode/skills/opencode-playbook-platform-windows/SKILL.md
+12.1	rules/WRITING.md	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.2	rules/WRITING.md	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.3	rules/WRITING.md	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.4	rules/WRITING.md	.opencode/skills/opencode-playbook-writing/SKILL.md
+EOF
+awk -F ' [|] ' '/^\| [0-9]+\.[0-9]+ \|/ { sub(/^\| /, "", $1); print $1 "\t" $2 "\t" $3 }' docs/reports/2026-09-17-rule-parity-matrix.md > "$test_root/actual-report-owners"
+if cmp -s "$test_root/expected-report-owners" "$test_root/actual-report-owners"; then pass 'parity report exact literal 49-row source and native ownership fixture'; else fail 'parity report source or native owner differs from literal fixture'; fi
 if [ "$(grep -Ec '^\| Doctrine \|' docs/reports/2026-09-17-rule-parity-matrix.md || true)" -eq 6 ] && grep -Fq '| Claude owner/source | OpenCode owner/path | Disposition | Specific adaptation reason |' docs/reports/2026-09-17-rule-parity-matrix.md; then pass 'parity matrix has six doctrine rows and ownership evidence columns'; else fail 'parity matrix lacks doctrine rows or ownership evidence columns'; fi
 if grep -RInE '(^|[^A-Za-z])Codex([^A-Za-z]|$)|\.agents/skills|\$CODEX_HOME|Claude Code|\.claude/skills|42-rule|3-skill|TBD|placeholder' AGENTS.md .opencode config docs/reports/2026-09-17-rule-parity-matrix.md 2>/dev/null | grep -vi compatibility >/dev/null; then fail 'stale client wording or placeholder found'; else pass 'no stale client wording or placeholders'; fi
 if grep -Fq 'implemented native OpenCode progressive-disclosure rulebook' README.md && grep -Fq '16 native repository skills' ARCHITECTURE.md && ! grep -Eiq '(installer|runtime).*(is complete|has been completed|implemented and ready)' README.md ARCHITECTURE.md; then pass 'current docs do not overclaim installer/runtime'; else fail 'README or ARCHITECTURE current-state claim invalid'; fi
