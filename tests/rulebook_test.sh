@@ -105,6 +105,21 @@ do
 done
 rows=$(sed -n '/^## Approval Table — the Complete List$/,/^## Mandatory Skill Router$/p' AGENTS.md | grep -Ec '^\| ' || true)
 if [ "$rows" -eq 10 ]; then pass 'approval table has header and nine closed rows'; else fail "approval table has $rows lines; expected 10"; fi
+cat > "$test_root/approval-rows" <<'EOF'
+| Situation | Action |
+|---|---|
+| Read-only work inside the request | Proceed. |
+| Ordinary reversible implementation inside an approved task or plan | Proceed through the full close-out chain. |
+| A new multi-task plan, or a change to architecture, a public API, a storage schema, a protocol, or a security/trust boundary | Ask with a concrete reviewable design. Do not ask again for an already approved design. |
+| Routine commits, `checkpoint/` tags, source pushes, and an approved phase's GitHub release | Proceed after checks pass unless I said local-only. |
+| The first action in a repository that publishes to a registry, deploys live, or emits release assets beyond source hosting | Ask once, naming destination and effect, unless the approved plan already named it. Source push approval is not package-publication approval. |
+| A new native datastore or service; a system, security-sensitive, destructive, or production-performance configuration change | Ask unless that exact change is already authorized. Ordinary reversible repository configuration does not need approval. |
+| Deleting, truncating, or wholesale replacing an `.env`, credential, secret, database, state file, log, backup, or user-created file; any mass or irreversible operation | Ask, naming exact targets. A broad build approval never covers this. |
+| Proven regenerable and idle build output, or a disposable fixture created by this run | Proceed after validation. A matching name or ignore rule is not proof. |
+| Ownership, scope, or recoverability remains uncertain after read-only inspection | Leave it alone or use `opencode-playbook-quarantine`. Ask only about the actual undecided action. |
+EOF
+sed -n '/^| Situation | Action |$/,/^## Mandatory Skill Router$/p' AGENTS.md | sed '/^## Mandatory Skill Router$/d; /^$/d' > "$test_root/actual-approval-rows"
+if cmp -s "$test_root/approval-rows" "$test_root/actual-approval-rows"; then pass 'approval table matches all nine canonical authorization rows'; else fail 'approval table differs from the exact nine-row authorization contract'; fi
 cat > "$test_root/loading-lines" <<'EOF'
 - OpenCode combines global and project `AGENTS.md`: global instructions load first and project instructions win a conflict. A custom root replaces the default XDG global `AGENTS.md`.
 - Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. The installer manages only the selected resolved root.
