@@ -18,7 +18,7 @@ because this skill exists.
 2. Fetch the public source of truth without authentication:
 
    ```sh
-   curl -fsSL https://raw.githubusercontent.com/nice-michel/opencode-playbook/main/VERSION
+   curl -fsS --proto =https --max-redirs 0 https://raw.githubusercontent.com/nice-michel/opencode-playbook/main/VERSION
    ```
 
 3. Validate that the response is one bare semantic version. A failed fetch,

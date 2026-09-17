@@ -39,10 +39,10 @@ No result for that port = free. In the `netstat` form, a line whose state column
 Windows has no `chmod` — a POSIX mode number like `700` is not the mechanism here. Use an explicit ACL instead: strip inheritance and grant only your own account.
 
 ```powershell
-icacls <dir> /inheritance:r /grant:r "$env:USERNAME:(OI)(CI)F"
+icacls <dir> /inheritance:r /grant:r "${env:USERNAME}:(OI)(CI)F"
 ```
 
-Verify afterward: `icacls <dir>` should list only your account with full control (no `Everyone`, no `Users`, no `Authenticated Users`); or `Get-Acl <dir> | Format-List` to see the full ACL. The cmdlet equivalent, if you need it programmatically, is `Get-Acl`/`Set-Acl` against a `DirectorySecurity` object with inheritance disabled and `FullControl` granted only to `[System.Security.Principal.WindowsIdentity]::GetCurrent().Name`.
+Verify afterward: `icacls <dir>` must list only the intended explicit account with full control; reject any explicit `Everyone`, `Users`, or `Authenticated Users` access-control entry. `Get-Acl <dir> | Format-List` shows the full ACL. The cmdlet equivalent, if needed programmatically, is `Get-Acl`/`Set-Acl` against a `DirectorySecurity` object with inheritance disabled and `FullControl` granted only to `[System.Security.Principal.WindowsIdentity]::GetCurrent().Name`.
 
 ## 5. Process holding a port / still alive / stop it
 

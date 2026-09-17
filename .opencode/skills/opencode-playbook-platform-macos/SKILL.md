@@ -45,7 +45,7 @@ Inspect before you terminate:
 
 1. Who holds the port: `lsof -nP -iTCP:<PORT> -sTCP:LISTEN` (PID and command are columns in the output)
 2. Is it still alive: `kill -0 <PID>` — exit status `0` with no output means alive; "No such process" means it's already gone. `ps -p <PID>` also works.
-3. Stop it: `kill <PID>` first (SIGTERM); only if it doesn't exit, `kill -9 <PID>` or `pkill -9 -f <pattern>` for a name-matched kill.
+3. Stop it: `kill <PID>` first (SIGTERM); only if the previously validated exact PID does not exit, `kill -9 <PID>`.
 
 ## 6. Conventional paths on this OS
 

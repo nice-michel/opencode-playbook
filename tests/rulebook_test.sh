@@ -98,6 +98,8 @@ if [ "$bytes" -le 12288 ]; then pass "AGENTS.md byte budget: $bytes"; else fail 
 awk '/^1\. \*\*We are partners\./ { capture=1 } /^\*\*This rulebook is version/ { exit } capture { print }' AGENTS.md | sed '${/^$/d;}' > "$test_root/actual-mantra"
 if cmp -s "$test_root/mantra" "$test_root/actual-mantra"; then pass 'exact complete normalized Claude mantra and coda'; else fail 'complete normalized mantra and coda differs from the canonical literal'; fi
 if [ "$(cat VERSION)" = 0.0.2 ] && grep -Fq '**This rulebook is version 0.0.2**' AGENTS.md; then pass 'version carriers match'; else fail 'VERSION and AGENTS must match 0.0.2'; fi
+printf '0.0.2\n' > "$test_root/expected-version"
+if cmp -s "$test_root/expected-version" VERSION; then pass 'VERSION is exactly one bare version line'; else fail 'VERSION must be exact literal 0.0.2 plus one newline'; fi
 
 for section in '## Authority' '## Classify the Request Before Acting' '## Approval Table — the Complete List' '## Mandatory Skill Router' '## OpenCode Loading Model' 'github.com/nice-michel/opencode-playbook' 'stable OpenCode 1.18.31 exactly'
 do
@@ -154,7 +156,7 @@ if [ "$(grep -Fxc "11.1${tab}.opencode/skills/opencode-playbook-platform-*/SKILL
 while IFS= read -r skill
 do
   file=".opencode/skills/$skill/SKILL.md"
-  if [ -d ".opencode/skills/$skill" ] && [ ! -L ".opencode/skills/$skill" ] && [ -f "$file" ] && [ ! -L "$file" ] && grep -Fxq "name: $skill" "$file" && [ "$(grep -Ec '^description: .+' "$file")" -eq 1 ]; then pass "$skill metadata and native file type"; else fail "$skill metadata, directory, or file type"; fi
+  if [ -d ".opencode/skills/$skill" ] && [ ! -L ".opencode/skills/$skill" ] && [ -f "$file" ] && [ ! -L "$file" ] && sed -n '1p' "$file" | grep -Fxq -- '---' && sed -n '2p' "$file" | grep -Fxq "name: $skill" && sed -n '3p' "$file" | grep -Eq '^description: .{1,240}$' && sed -n '4p' "$file" | grep -Fxq -- '---'; then pass "$skill exact opening metadata and native file type"; else fail "$skill metadata must be the exact opening four-line block"; fi
   matches=$(sed -n '/^## Mandatory Skill Router$/,/^## OpenCode Loading Model$/p' AGENTS.md | grep -Foc "$skill" || true)
   if [ "$matches" -eq 1 ]; then pass "$skill router mention"; else fail "$skill router mention count $matches"; fi
 done < "$test_root/skills"
@@ -164,6 +166,8 @@ extra_managed=$(find .opencode/skills -mindepth 1 -maxdepth 1 -type d -name 'ope
 if [ "$extra_managed" -eq 16 ]; then pass 'no extra managed skill directories exist'; else fail "managed skill directory count: $extra_managed"; fi
 self_update=.opencode/skills/opencode-playbook-self-update/SKILL.md
 if ! grep -Fq './scripts/install.sh' "$self_update" && ! grep -Fq './scripts/restore.sh' "$self_update" && grep -Fq 'release_checkout' "$self_update" && grep -Fq '"$release_checkout/scripts/install.sh" --replace-agents' "$self_update" && grep -Fq '"$release_checkout/scripts/restore.sh"' "$self_update" && grep -Fq 'exact approved public release' "$self_update" && grep -Fiq 'verify the checkout revision, VERSION, and repository verification' "$self_update" && grep -Fq 'automated safe replacement is unavailable' "$self_update"; then pass 'self-update binds every procedure path to a verified release checkout'; else fail 'self-update has an unbound path or lacks the verified release-checkout procedure'; fi
+if grep -Fq 'curl -fsS --proto =https --max-redirs 0' "$self_update"; then pass 'self-update fetch rejects redirects and non-HTTPS'; else fail 'self-update fetch must be HTTPS-only and reject redirects'; fi
+if grep -Fq '"${env:USERNAME}:(OI)(CI)F"' .opencode/skills/opencode-playbook-platform-windows/SKILL.md && ! grep -R -Fq 'pkill -9 -f' .opencode/skills/opencode-playbook-platform-linux .opencode/skills/opencode-playbook-platform-macos; then pass 'platform emergency commands use safe ACL interpolation and exact PIDs'; else fail 'platform ACL or emergency kill command is unsafe'; fi
 
 : > "$test_root/occurrences"
 for file in AGENTS.md .opencode/skills/opencode-playbook-*/SKILL.md

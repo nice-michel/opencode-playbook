@@ -43,7 +43,7 @@ Inspect before you terminate:
 
 1. Who holds the port: `ss -tlnp | grep ':<PORT> '` (PID and process name are in the last column) or `lsof -i :<PORT>`
 2. Is it still alive: `kill -0 <PID>` — exit status `0` with no output means alive; "No such process" means it's already gone. `ps -p <PID>` works too and shows the command line.
-3. Stop it: `kill <PID>` first (SIGTERM, lets it clean up); only if it doesn't exit, `kill -9 <PID>` or `pkill -9 -f <pattern>` for a name-matched kill.
+3. Stop it: `kill <PID>` first (SIGTERM, lets it clean up); only if the previously validated exact PID does not exit, `kill -9 <PID>`.
 
 ## 6. Conventional paths on this OS
 
