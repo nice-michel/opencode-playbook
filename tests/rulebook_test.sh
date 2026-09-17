@@ -162,6 +162,8 @@ count=$(find .opencode/skills -mindepth 2 -maxdepth 2 -name SKILL.md -path '*/op
 if [ "$count" -eq 16 ]; then pass 'all and only 16 managed native skills'; else fail "managed native skills: $count"; fi
 extra_managed=$(find .opencode/skills -mindepth 1 -maxdepth 1 -type d -name 'opencode-playbook-*' | wc -l | tr -d ' ')
 if [ "$extra_managed" -eq 16 ]; then pass 'no extra managed skill directories exist'; else fail "managed skill directory count: $extra_managed"; fi
+self_update=.opencode/skills/opencode-playbook-self-update/SKILL.md
+if ! grep -Fq './scripts/install.sh' "$self_update" && ! grep -Fq './scripts/restore.sh' "$self_update" && grep -Fq 'release_checkout' "$self_update" && grep -Fq '"$release_checkout/scripts/install.sh" --replace-agents' "$self_update" && grep -Fq '"$release_checkout/scripts/restore.sh"' "$self_update" && grep -Fq 'exact approved public release' "$self_update" && grep -Fiq 'verify the checkout revision, VERSION, and repository verification' "$self_update" && grep -Fq 'automated safe replacement is unavailable' "$self_update"; then pass 'self-update binds every procedure path to a verified release checkout'; else fail 'self-update has an unbound path or lacks the verified release-checkout procedure'; fi
 
 : > "$test_root/occurrences"
 for file in AGENTS.md .opencode/skills/opencode-playbook-*/SKILL.md

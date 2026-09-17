@@ -49,22 +49,44 @@ request as update approval.
 
 ## Approved update
 
-1. Before any replacement preparation, detect the required automated procedures:
+1. Obtain and bind a clean checkout of the exact approved public release to
+   an absolute `release_checkout` path. This checkout is task-owned evidence,
+   not a modification of the current project and not replacement of the active
+   installation. Retain and report its path at close-out; do not promise
+   destructive cleanup.
+
+2. Verify the checkout revision, VERSION, and repository verification before
+   touching an installation. The checkout revision must be the approved public
+   release and its `VERSION` must equal the version approved for replacement;
+   run the checkout's documented repository verification from that bound path.
+
+3. Test only the bound executable procedures:
 
    ```sh
-   test -x ./scripts/install.sh && test -x ./scripts/restore.sh
+   test -x "$release_checkout/scripts/install.sh" && \
+     test -x "$release_checkout/scripts/restore.sh"
    ```
 
-   If either script is absent, immediately report that automated safe replacement is unavailable and stop. Do not obtain a replacement checkout or improvise a partial manual replacement. When both scripts are present in a later release, continue with the documented procedure.
+   If either path is absent, report that automated safe replacement is unavailable and stop before any installation write. Do not improvise a
+   partial manual replacement.
 
-2. Obtain a clean checkout of the exact public version being installed.
-3. Run the checkout's repository verification before touching the installation, then run its documented, verified backup-first replacement procedure.
+4. Execute only the verified, bound installer:
 
-4. Confirm the installer reports its verified checkpoint, global rules target,
+   ```sh
+   "$release_checkout/scripts/install.sh" --replace-agents
+   ```
+
+5. Confirm the installer reports its verified checkpoint, global rules target,
    skill root, and installed version.
-5. Start a fresh OpenCode session; instruction discovery occurs at session start.
-6. Run the installed-copy verification documented by that release.
-7. Report the recovery command using the exact checkpoint path. Never print
+6. Start a fresh OpenCode session; instruction discovery occurs at session start.
+7. Run the installed-copy verification documented by that release.
+8. Use only the bound restore path if recovery is required:
+
+   ```sh
+   "$release_checkout/scripts/restore.sh" <exact-checkpoint-path>
+   ```
+
+   Report the recovery command using the exact checkpoint path. Never print
    credentials, tokens, or the contents of tailored secret-bearing files while
    comparing installations.
 
