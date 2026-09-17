@@ -31,8 +31,8 @@ This is the reviewable parity record for the pinned Claude doctrine (commit 5db6
 | 2.2 | rules/TESTING.md | .opencode/skills/opencode-playbook-testing/SKILL.md | Mechanically adapted | Native OpenCode skill path preserves test and evidence triggers. |
 | 2.3 | rules/TESTING.md | .opencode/skills/opencode-playbook-testing/SKILL.md | Mechanically adapted | Native OpenCode skill path preserves test and evidence triggers. |
 | 3.1 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Mechanically adapted | Capability tiers replace named client-model references while review ladder remains intact. |
-| 3.2 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Mechanically adapted | Capability tiers replace named client-model references while review ladder remains intact. |
-| 3.3 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Mechanically adapted | Capability tiers replace named client-model references while review ladder remains intact. |
+| 3.2 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Preserved | Batch-boundary and risk-override doctrine is unchanged; only its native skill location differs. |
+| 3.3 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Preserved | Pipeline, tip re-check, and stop-the-line doctrine is unchanged; only its native skill location differs. |
 | 3.4 | rules/REVIEWS.md | .opencode/skills/opencode-playbook-reviews/SKILL.md | Mechanically adapted | Capability tiers replace named client-model references while review ladder remains intact. |
 | 4.1 | rules/DOCS.md | .opencode/skills/opencode-playbook-documentation/SKILL.md | Mechanically adapted | Native skill owns documentation and ADR procedure. |
 | 4.2 | rules/DOCS.md | .opencode/skills/opencode-playbook-documentation/SKILL.md | Mechanically adapted | Native skill owns documentation and ADR procedure. |
@@ -42,8 +42,8 @@ This is the reviewable parity record for the pinned Claude doctrine (commit 5db6
 | 5.3 | rules/REPO.md | .opencode/skills/opencode-playbook-repository/SKILL.md | Mechanically adapted | Native skill owns repository-record conventions. |
 | 6.1 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Mechanically adapted | OpenCode-neutral client identity and generic capability wording replace client-specific details. |
 | 6.2 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Mechanically adapted | OpenCode-neutral client identity and generic capability wording replace client-specific details. |
-| 6.3 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Mechanically adapted | OpenCode-neutral client identity and generic capability wording replace client-specific details. |
-| 6.4 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Mechanically adapted | OpenCode-neutral client identity and generic capability wording replace client-specific details. |
+| 6.3 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Preserved | Phase merge, audit, release, and advisory gate doctrine is unchanged; only its native skill location differs. |
+| 6.4 | rules/WORKFLOW.md | .opencode/skills/opencode-playbook-workflow/SKILL.md | Preserved | Published-history protection is unchanged; only its native skill location differs. |
 | 7.1 | rules/COLLABORATION.md | .opencode/skills/opencode-playbook-collaboration/SKILL.md | Mechanically adapted | Native skill provides OpenCode collaboration procedure without new authority. |
 | 7.2 | rules/COLLABORATION.md | .opencode/skills/opencode-playbook-collaboration/SKILL.md | Mechanically adapted | Native skill provides OpenCode collaboration procedure without new authority. |
 | 7.3 | rules/COLLABORATION.md | .opencode/skills/opencode-playbook-collaboration/SKILL.md | Mechanically adapted | Native skill provides OpenCode collaboration procedure without new authority. |
@@ -52,7 +52,7 @@ This is the reviewable parity record for the pinned Claude doctrine (commit 5db6
 | 7.6 | rules/COLLABORATION.md | .opencode/skills/opencode-playbook-collaboration/SKILL.md | Mechanically adapted | Native skill provides OpenCode collaboration procedure without new authority. |
 | 7.7 | rules/COLLABORATION.md | .opencode/skills/opencode-playbook-collaboration/SKILL.md | Mechanically adapted | Native skill provides OpenCode collaboration procedure without new authority. |
 | 8.1 | rules/SUBAGENTS.md | .opencode/skills/opencode-playbook-subagents/SKILL.md | Mechanically adapted | Generic deep, standard, and fast capability tiers replace product model names. |
-| 9.1 | rules/ENVIRONMENT.md | .opencode/skills/opencode-playbook-environment/SKILL.md | Mechanically adapted | Native skill path carries operations safeguards. |
+| 9.1 | rules/ENVIRONMENT.md | .opencode/skills/opencode-playbook-environment/SKILL.md | Mechanically adapted | The port-claim registry changes from `~/.config/agent-rules/ports/` to the OpenCode-owner override `~/.config/fleet/ports/`. |
 | 9.2 | rules/ENVIRONMENT.md | .opencode/skills/opencode-playbook-environment/SKILL.md | Mechanically adapted | Native skill path carries operations safeguards. |
 | 9.3 | rules/ENVIRONMENT.md | .opencode/skills/opencode-playbook-environment/SKILL.md | Mechanically adapted | Native skill path carries operations safeguards. |
 | 9.4 | rules/ENVIRONMENT.md | .opencode/skills/opencode-playbook-environment/SKILL.md | Mechanically adapted | Native skill path carries operations safeguards. |

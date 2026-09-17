@@ -82,6 +82,6 @@ The files under `<OpenCode config root>/skills/` are the rest of this rulebook. 
 - The global root is a non-empty `OPENCODE_CONFIG_DIR`; otherwise it is `${XDG_CONFIG_HOME:-$HOME/.config}/opencode`.
 - OpenCode combines global and project `AGENTS.md`: global instructions load first and project instructions win a conflict. A custom root replaces the default XDG global `AGENTS.md`.
 - The first matching `AGENTS.md` versus `CLAUDE.md` is a within-scope fallback, not a general global replacement.
-- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. The installer manages only the selected resolved root.
+- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. A future installer will manage only the selected resolved root after Task 2.
 - A future installer will manage only `AGENTS.md` and the 16 namespaced skills at its selected resolved root. It will never manage `opencode.json`, `opencode.jsonc`, auth, providers, plugins, sessions, or unrelated skills.
 - Never treat a skill as loaded merely because its name appears above. Select it and read its full `SKILL.md` when its trigger fires.

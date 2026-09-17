@@ -42,22 +42,23 @@ approval table. **Stop and ask before replacement**, naming:
 - the important changes;
 - active global file and skill destinations;
 - whether local files differ from their last known installed source; and
-- that the installer will create and verify a unique recovery checkpoint first.
+- that replacement can proceed only if the future install and restore procedures exist and verify a recovery checkpoint.
 
 Approval to check is not approval to replace. Do not interpret a general build
 request as update approval.
 
 ## Approved update
 
-1. Obtain a clean checkout of the exact public version being installed.
-2. Run the checkout's repository verification before touching the installation.
-3. Before replacement, detect the required automated procedures:
+1. Before any replacement preparation, detect the required automated procedures:
 
    ```sh
    test -x ./scripts/install.sh && test -x ./scripts/restore.sh
    ```
 
-   If either script is absent, report that automated safe replacement is unavailable and do not replace anything. Do not improvise a partial manual replacement. When both scripts are present in a later release, run the checkout's documented, verified backup-first replacement procedure.
+   If either script is absent, immediately report that automated safe replacement is unavailable and stop. Do not obtain a replacement checkout or improvise a partial manual replacement. When both scripts are present in a later release, continue with the documented procedure.
+
+2. Obtain a clean checkout of the exact public version being installed.
+3. Run the checkout's repository verification before touching the installation, then run its documented, verified backup-first replacement procedure.
 
 4. Confirm the installer reports its verified checkpoint, global rules target,
    skill root, and installed version.

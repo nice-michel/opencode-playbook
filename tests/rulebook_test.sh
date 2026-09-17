@@ -122,12 +122,25 @@ sed -n '/^| Situation | Action |$/,/^## Mandatory Skill Router$/p' AGENTS.md | s
 if cmp -s "$test_root/approval-rows" "$test_root/actual-approval-rows"; then pass 'approval table matches all nine canonical authorization rows'; else fail 'approval table differs from the exact nine-row authorization contract'; fi
 cat > "$test_root/loading-lines" <<'EOF'
 - OpenCode combines global and project `AGENTS.md`: global instructions load first and project instructions win a conflict. A custom root replaces the default XDG global `AGENTS.md`.
-- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. The installer manages only the selected resolved root.
+- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. A future installer will manage only the selected resolved root after Task 2.
 EOF
 while IFS= read -r loading_line
 do
   if grep -Fq -- "$loading_line" AGENTS.md; then pass 'exact OpenCode loading semantics'; else fail "missing OpenCode loading semantic: $loading_line"; fi
 done < "$test_root/loading-lines"
+cat > "$test_root/loading-section" <<'EOF'
+## OpenCode Loading Model
+
+- Supported release target: stable OpenCode 1.18.31 exactly. OpenCode v2 and other versions are untested and unsupported.
+- The global root is a non-empty `OPENCODE_CONFIG_DIR`; otherwise it is `${XDG_CONFIG_HOME:-$HOME/.config}/opencode`.
+- OpenCode combines global and project `AGENTS.md`: global instructions load first and project instructions win a conflict. A custom root replaces the default XDG global `AGENTS.md`.
+- The first matching `AGENTS.md` versus `CLAUDE.md` is a within-scope fallback, not a general global replacement.
+- Native skill discovery retains the static XDG config skill directory and adds the selected custom config root; compatibility `.agents/skills` and `.claude/skills` may add more. A future installer will manage only the selected resolved root after Task 2.
+- A future installer will manage only `AGENTS.md` and the 16 namespaced skills at its selected resolved root. It will never manage `opencode.json`, `opencode.jsonc`, auth, providers, plugins, sessions, or unrelated skills.
+- Never treat a skill as loaded merely because its name appears above. Select it and read its full `SKILL.md` when its trigger fires.
+EOF
+sed -n '/^## OpenCode Loading Model$/,$p' AGENTS.md > "$test_root/actual-loading-section"
+if cmp -s "$test_root/loading-section" "$test_root/actual-loading-section"; then pass 'complete OpenCode loading contract matches literal fixture'; else fail 'complete OpenCode loading contract differs from literal fixture'; fi
 grep -Eho '^[0-9]+\.[0-9]+ \*\*' AGENTS.md | sed 's/ \*\*$//' > "$test_root/router-ids" || true
 printf '0.1\n0.2\n0.3\n0.4\n' > "$test_root/core-ids"
 if cmp -s "$test_root/core-ids" "$test_root/router-ids"; then pass 'router carries only 0.1-0.4 bodies'; else fail 'router must carry exactly 0.1-0.4 bodies'; fi
@@ -158,6 +171,63 @@ do
   do printf '%s\t%s\n' "$id" "$file"; done >> "$test_root/occurrences"
 done
 cut -f1 "$test_root/occurrences" | LC_ALL=C sort -V -u > "$test_root/actual-ids"
+cat > "$test_root/expected-occurrences" <<'EOF'
+0.1	AGENTS.md
+0.2	AGENTS.md
+0.3	AGENTS.md
+0.4	AGENTS.md
+1.1	.opencode/skills/opencode-playbook-code/SKILL.md
+1.2	.opencode/skills/opencode-playbook-code/SKILL.md
+1.3	.opencode/skills/opencode-playbook-code/SKILL.md
+1.4	.opencode/skills/opencode-playbook-code/SKILL.md
+1.5	.opencode/skills/opencode-playbook-code/SKILL.md
+1.6	.opencode/skills/opencode-playbook-code/SKILL.md
+2.1	.opencode/skills/opencode-playbook-testing/SKILL.md
+2.2	.opencode/skills/opencode-playbook-testing/SKILL.md
+2.3	.opencode/skills/opencode-playbook-testing/SKILL.md
+3.1	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.2	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.3	.opencode/skills/opencode-playbook-reviews/SKILL.md
+3.4	.opencode/skills/opencode-playbook-reviews/SKILL.md
+4.1	.opencode/skills/opencode-playbook-documentation/SKILL.md
+4.2	.opencode/skills/opencode-playbook-documentation/SKILL.md
+4.3	.opencode/skills/opencode-playbook-documentation/SKILL.md
+5.1	.opencode/skills/opencode-playbook-repository/SKILL.md
+5.2	.opencode/skills/opencode-playbook-repository/SKILL.md
+5.3	.opencode/skills/opencode-playbook-repository/SKILL.md
+6.1	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.2	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.3	.opencode/skills/opencode-playbook-workflow/SKILL.md
+6.4	.opencode/skills/opencode-playbook-workflow/SKILL.md
+7.1	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.2	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.3	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.4	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.5	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.6	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+7.7	.opencode/skills/opencode-playbook-collaboration/SKILL.md
+8.1	.opencode/skills/opencode-playbook-subagents/SKILL.md
+9.1	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.2	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.3	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.4	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.5	.opencode/skills/opencode-playbook-environment/SKILL.md
+9.6	.opencode/skills/opencode-playbook-environment/SKILL.md
+10.1	.opencode/skills/opencode-playbook-destructive/SKILL.md
+10.2	.opencode/skills/opencode-playbook-destructive/SKILL.md
+10.3	.opencode/skills/opencode-playbook-quarantine/SKILL.md
+11.1	.opencode/skills/opencode-playbook-platform-linux/SKILL.md
+11.1	.opencode/skills/opencode-playbook-platform-macos/SKILL.md
+11.1	.opencode/skills/opencode-playbook-platform-windows/SKILL.md
+12.1	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.2	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.3	.opencode/skills/opencode-playbook-writing/SKILL.md
+12.4	.opencode/skills/opencode-playbook-writing/SKILL.md
+EOF
+LC_ALL=C sort "$test_root/occurrences" > "$test_root/sorted-occurrences"
+LC_ALL=C sort "$test_root/expected-occurrences" > "$test_root/sorted-expected-occurrences"
+if cmp -s "$test_root/sorted-expected-occurrences" "$test_root/sorted-occurrences"; then pass 'all rule heading occurrences exactly match the literal ownership fixture'; else fail 'rule heading occurrence is missing, duplicated, or undeclared'; fi
+
 if cmp -s "$test_root/ids" "$test_root/actual-ids"; then pass 'all 49 canonical rule headings exist'; else fail 'missing or unknown rule heading'; fi
 ownership=0
 while IFS="$(printf '\t')" read -r id owner
